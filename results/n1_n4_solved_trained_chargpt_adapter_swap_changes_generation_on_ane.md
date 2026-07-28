@@ -3,7 +3,7 @@
 **Date:** 2026-07-28. CC own-raw, measured. Executes `BUILD_SCOPE_trained_ane_native_gpt_plus_lora_swap_2026-07-27.md` end to end. This is the "no untrained caveat" version of S4: the model is TRAINED, so the adapter swap changes real generation, not an arbitrary token id.
 
 ## The model (ours, trained)
-Char-level GPT in our ANE-native form (conv2d-as-linear, `(B,C,1,S)`, attention-as-matmul, mean-of-squares LayerNorm, additive causal mask, fp16). 4 blocks, D=256, 4 heads, FF=1024, block=128, vocab=65 (chars). ~4.8M params. Trained on tinyshakespeare (5000 iters, MPS), val loss ~1.56. Token embedding + sampling host-side; the transformer body runs on the ANE (standard on-device serving split).
+Char-level GPT in our ANE-native form (conv2d-as-linear, `(B,C,1,S)`, attention-as-matmul, mean-of-squares LayerNorm, additive causal mask, fp16). 6 blocks, D=256, 4 heads, FF=1024, block=128, vocab=65 (chars). ~4.8M params. Trained on tinyshakespeare (5000 iters, MPS), val loss ~1.56. Token embedding + sampling host-side; the transformer body runs on the ANE (standard on-device serving split).
 
 ## The four gates (measured)
 - **N1 — trained base.** Generates coherent Shakespeare: play format (name-colon-dialogue), verse, real history-play characters (WARWICK, QUEEN MARGARET, KING HENRY VI, KING RICHARD III), "thee"/"thou"/"'Tis". Loose word-to-word (char-level, small) but unmistakably Shakespeare.
