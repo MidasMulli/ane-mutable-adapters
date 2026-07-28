@@ -38,12 +38,38 @@ Files:
 - `build/split_adapter.py`      repoints the adapter const to `adapter.bin` and declares it mutable
 - `harness/swap.mm`             loads the base, injects one adapter, reads the predicted token
 - `harness/ane.entitlements`    the ANE mutable-weight entitlements (self-signed, honored only under SIP off)
-- `results/`                    the S1 and S4 findings, plus a verbatim kernel-log excerpt
+- `chargpt/`                    the **trained** follow-up: train a char-GPT, train two adapters, swap them on the ANE
+- `results/`                    the S1, S4 and N1-N4 findings, plus a verbatim kernel-log excerpt
 - `media/`                      a mechanism video, a terminal-replay video, an interactive explainer
+
+## The trained follow-up (`chargpt/`)
+
+The demo above swaps an adapter on an **untrained** model and flips a token id. That proves the mechanism
+but not that it means anything. `chargpt/` closes that gap: we train a small character-level GPT
+(D=256, 6 layers, 4 heads, block 128) on tinyshakespeare, train **two LoRA adapters over the one frozen
+base**, and swap them on the Neural Engine. The generated text changes register with the swap while the
+base stays byte-identical.
+
+CoreML's compute plan places every op of the transformer body on the ANE (216 of 216, CPU 0). Token
+embedding and sampling run on the host; the body runs on the ANE.
+
+```bash
+cd chargpt
+python3 train_chargpt.py          # downloads tinyshakespeare, trains the base
+python3 train_adapters.py         # trains adapter A (Shakespeare) and B (a second register)
+python3 build_chargpt_ane.py      # exports the ANE-native body
+python3 build_gen_assets.py       # builds the generation assets
+# then build + run gen.mm against a trusted adapter dir, as in run.sh
+```
+
+Outputs go to `chargpt/_out/` by default (override with `CHARGPT_OUT`). Model weights are gitignored;
+the corpus is downloaded on first run. See
+`results/n1_n4_solved_trained_chargpt_adapter_swap_changes_generation_on_ane.md` for the measured record.
 
 ## Scope and honesty
 
-- The model here is **small and untrained**. It is an architecture demonstration of the mechanism, not a trained model. The token ids (436, 544) carry no meaning; what is real is that swapping the adapter changes the model's decision while the base stays frozen.
+- The **S4 demo** (`build/`) is **small and untrained**. It is an architecture demonstration of the mechanism, not a trained model. The token ids (436, 544) carry no meaning; what is real is that swapping the adapter changes the model's decision while the base stays frozen.
+- The **trained demo** (`chargpt/`) removes that caveat: a char-level GPT we trained, where swapping the adapter changes the text it actually writes. It is still small (NanoGPT scale, character-level), and it is not a trained 8B.
 - **SIP off is required** to write the trusted directory. This is Apple's internal mechanism in a research setting.
 - Apple's mutable-weight mechanism is **instrumental**. The transformer, the LM head, and the adapters are ours.
 
