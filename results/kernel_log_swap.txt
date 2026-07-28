@@ -1,0 +1,14 @@
+# aned kernel-log excerpt for one adapter swap on the transformer (txf) model.
+# Captured via `sudo dmesg` around a single swap call. These are verbatim aned strings.
+# What they show: the base is one frozen kernel section; the adapter is a SEPARATE
+# small mutable cluster; trust clears by directory path-prefix; only the adapter is patched.
+
+create: withVnodeAllocation: 1 sectionAddress: 0x0 sectionOffset: 0x0 sectionSize: 0x80000        # adapter cluster = 512 KB
+initSplitKernelSections: Kernel Split [0] file_offset: 131072 section_size: 6811776 bar_id: 7       # base = 6.8 MB, frozen, untouched
+aneVnodeTrustVerification: AppleIntelligence DataVault verification succeeded                        # trust by path-prefix, not content signature
+patchClusterProcessInstanceWeightsBuffers: No matching global mutable buffer found for mutableClusterIndex: 0, will proceed with fresh patching
+patchClusterProcessInstanceWeightsBuffers: Fresh patching completed, adding new weightInfo to process local list for mutableClusterIndex: 0
+
+# Placement (CoreML MLComputePlan, units=cpuAndNeuralEngine): ANE=134  CPU=0  GPU=0
+# Result: adapter A -> predicted token 436 (max logit 17.08); adapter B -> 544 (22.56); deterministic.
+# base weight.bin md5 constant across both swaps (frozen); only adapter.bin differs.

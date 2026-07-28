@@ -1,0 +1,327 @@
+<title>Hot-swapping a LoRA adapter on the Apple Neural Engine</title>
+<style>
+  :root{
+    --bg:#080b11; --bg2:#0b1017; --panel:#0f1621; --panel2:#141e2b;
+    --line:#1f2b3b; --line2:#2a3a4f;
+    --text:#e2eaf4; --muted:#8697ad; --dim:#5d6b80;
+    --base:#38bdf8;      /* frozen resident base  = cool */
+    --adapter:#fbbf24;   /* hot-swappable adapter = warm */
+    --ane:#34d399;       /* ANE-active signal */
+    --danger:#fb7185;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  body{
+    background:
+      radial-gradient(1200px 600px at 78% -8%, rgba(56,189,248,.10), transparent 60%),
+      radial-gradient(900px 500px at 10% 108%, rgba(251,191,36,.06), transparent 55%),
+      var(--bg);
+    color:var(--text); font-family:var(--sans); line-height:1.55;
+    -webkit-font-smoothing:antialiased; margin:0;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px}
+  section{padding:64px 0; border-top:1px solid var(--line)}
+  section:first-of-type{border-top:none}
+  h1,h2,h3{text-wrap:balance; margin:0}
+  .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--base); margin:0 0 14px}
+  .eyebrow.amber{color:var(--adapter)}
+  h1{font-size:clamp(30px,5vw,52px); line-height:1.04; font-weight:680; letter-spacing:-.02em}
+  h2{font-size:clamp(23px,3.4vw,33px); font-weight:640; letter-spacing:-.015em}
+  h3{font-size:16px; font-weight:620; letter-spacing:-.01em}
+  p{margin:14px 0; color:#c3cede}
+  .lede{font-size:clamp(17px,2.1vw,20px); color:#cdd8e8; max-width:64ch}
+  .muted{color:var(--muted)}
+  .mono{font-family:var(--mono)}
+  a{color:var(--base)}
+
+  /* hero */
+  .hero{padding:74px 0 40px}
+  .kss{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px}
+  .chip{font-family:var(--mono); font-size:12px; color:var(--muted); border:1px solid var(--line2);
+    background:var(--panel); padding:6px 11px; border-radius:999px; display:inline-flex; gap:7px; align-items:center}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--ane);box-shadow:0 0 8px var(--ane)}
+
+  /* interactive stage */
+  .stage{margin-top:34px; background:linear-gradient(180deg,var(--panel),var(--bg2));
+    border:1px solid var(--line2); border-radius:18px; padding:26px; box-shadow:0 24px 60px -30px rgba(0,0,0,.8)}
+  .stage-head{display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:20px}
+  .seg{display:inline-flex; background:#0a0f16; border:1px solid var(--line2); border-radius:12px; padding:4px; gap:4px}
+  .seg button{font-family:var(--mono); font-size:13px; letter-spacing:.02em; color:var(--muted); background:transparent;
+    border:0; padding:9px 18px; border-radius:9px; cursor:pointer; transition:all .18s ease; font-weight:600}
+  .seg button .k{color:var(--adapter); font-weight:700}
+  .seg button[aria-pressed="true"]{background:rgba(251,191,36,.14); color:var(--text); box-shadow:inset 0 0 0 1px rgba(251,191,36,.4)}
+  .seg button:focus-visible{outline:2px solid var(--base); outline-offset:2px}
+
+  /* pipeline */
+  .pipe-scroll{overflow-x:auto; padding-bottom:6px; margin:0 -4px}
+  .pipe{display:flex; align-items:stretch; gap:10px; min-width:720px; padding:4px}
+  .node{flex:1; min-width:96px; background:var(--panel2); border:1px solid var(--line2); border-radius:13px;
+    padding:14px 12px; display:flex; flex-direction:column; gap:8px; position:relative}
+  .node .lbl{font-family:var(--mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--dim)}
+  .node .val{font-family:var(--mono); font-size:13px; color:var(--text)}
+  .node.base{border-color:rgba(56,189,248,.32)}
+  .node.base .bar{height:4px;border-radius:3px;background:linear-gradient(90deg,var(--base),rgba(56,189,248,.25))}
+  .node.frozen::after{content:"🔒 frozen"; font-family:var(--mono); font-size:10px; color:var(--base); opacity:.8}
+  .node.adapter{border-color:rgba(251,191,36,.45); background:linear-gradient(180deg,rgba(251,191,36,.09),var(--panel2))}
+  .node.adapter .bar{height:4px;border-radius:3px;background:linear-gradient(90deg,var(--adapter),rgba(251,191,36,.25))}
+  .node.adapter.patch{animation:patch .7s ease}
+  @keyframes patch{0%{box-shadow:0 0 0 0 rgba(251,191,36,.0)}25%{box-shadow:0 0 0 3px rgba(251,191,36,.55)}100%{box-shadow:0 0 0 0 rgba(251,191,36,0)}}
+  .arrow{align-self:center; color:var(--dim); font-family:var(--mono); font-size:18px}
+  .node.out{border-color:rgba(52,211,153,.4); background:linear-gradient(180deg,rgba(52,211,153,.08),var(--panel2))}
+
+  /* token readout */
+  .readout{display:grid; grid-template-columns:1.1fr 1fr; gap:18px; margin-top:22px}
+  @media(max-width:720px){.readout{grid-template-columns:1fr}}
+  .tokbox{background:#0a0f16; border:1px solid var(--line2); border-radius:14px; padding:20px; display:flex; flex-direction:column; gap:6px}
+  .tokbox .cap{font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted)}
+  .tok{font-family:var(--mono); font-weight:700; font-size:54px; line-height:1; letter-spacing:-.02em; color:var(--adapter);
+    transition:transform .35s cubic-bezier(.2,.9,.2,1), color .35s}
+  .tok.flip{transform:translateY(-6px) scale(1.04)}
+  .toksub{font-family:var(--mono); font-size:13px; color:var(--muted)}
+  .vocab{margin-top:12px}
+  .vocab .track{position:relative; height:34px; background:linear-gradient(90deg,#0c131c,#0c131c); border:1px solid var(--line2); border-radius:8px; overflow:hidden}
+  .vocab .ticks{position:absolute; inset:0; background-image:repeating-linear-gradient(90deg,transparent 0,transparent 9px,rgba(255,255,255,.045) 9px,rgba(255,255,255,.045) 10px)}
+  .vocab .mark{position:absolute; top:-2px; bottom:-2px; width:3px; background:var(--adapter); box-shadow:0 0 12px var(--adapter);
+    transition:left .5s cubic-bezier(.2,.9,.2,1)}
+  .vocab .scale{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; color:var(--dim); margin-top:5px}
+
+  /* kernel log */
+  .term{background:#060a0f; border:1px solid var(--line2); border-radius:14px; padding:16px 16px 14px; font-family:var(--mono); font-size:12.5px; line-height:1.75; overflow:hidden}
+  .term .thead{color:var(--dim); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; margin-bottom:8px}
+  .term .ln{white-space:pre-wrap; color:#9fb0c6}
+  .term .ln .g{color:var(--ane)} .term .ln .a{color:var(--adapter)} .term .ln .b{color:var(--base)} .term .ln .d{color:var(--dim)}
+  .frozenrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; align-items:center}
+
+  /* generic cards */
+  .grid{display:grid; gap:18px}
+  .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px}
+  .card h3{margin-bottom:6px}
+  .card .num{font-family:var(--mono); font-size:30px; font-weight:700; letter-spacing:-.02em}
+  .card.base-c{border-color:rgba(56,189,248,.28)} .card.base-c .num{color:var(--base)}
+  .card.adapter-c{border-color:rgba(251,191,36,.32)} .card.adapter-c .num{color:var(--adapter)}
+  .card.ane-c .num{color:var(--ane)}
+  .card p{font-size:14px; margin:8px 0 0}
+
+  /* anatomy diagram */
+  .anat{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:26px; margin-top:26px}
+  .layers{display:flex; flex-direction:column; gap:12px}
+  .layer{display:grid; grid-template-columns:150px 1fr; gap:16px; align-items:center}
+  @media(max-width:640px){.layer{grid-template-columns:1fr}}
+  .layer .name{font-family:var(--mono); font-size:12px; color:var(--muted); letter-spacing:.04em}
+  .memrow{display:flex; height:44px; border-radius:9px; overflow:hidden; border:1px solid var(--line2)}
+  .memrow .seg-base{flex:1; background:repeating-linear-gradient(45deg,rgba(56,189,248,.16),rgba(56,189,248,.16) 8px,rgba(56,189,248,.09) 8px,rgba(56,189,248,.09) 16px); display:flex; align-items:center; padding-left:14px; font-family:var(--mono); font-size:12px; color:#bfe3fb; border-right:2px solid var(--adapter)}
+  .memrow .seg-ad{width:16%; min-width:78px; background:rgba(251,191,36,.18); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:11px; color:#ffe6a1; text-align:center}
+
+  /* scaling bars */
+  .scaleblk{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:24px}
+  @media(max-width:760px){.scaleblk{grid-template-columns:1fr}}
+  .scalecard{background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:22px}
+  .scalecard.live{border-color:rgba(52,211,153,.4)}
+  .scalecard .tag{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase}
+  .scalecard.live .tag{color:var(--ane)} .scalecard.proj .tag{color:var(--muted)}
+  .barwrap{margin-top:18px}
+  .barrow{display:flex; align-items:center; gap:12px; margin:10px 0}
+  .barrow .k{font-family:var(--mono); font-size:12px; width:64px; color:var(--muted)}
+  .barrow .track{flex:1; height:26px; background:#0a0f16; border-radius:6px; overflow:hidden; border:1px solid var(--line)}
+  .barrow .fill{height:100%; display:flex; align-items:center; padding-left:10px; font-family:var(--mono); font-size:11px; color:#04121e; font-weight:700; white-space:nowrap}
+  .fill.base{background:linear-gradient(90deg,var(--base),#7dd3fc)}
+  .fill.ad{background:linear-gradient(90deg,var(--adapter),#fcd34d)}
+  .ratio{font-family:var(--mono); margin-top:14px; font-size:13px; color:var(--text)}
+  .ratio b{color:var(--adapter)}
+
+  .callout{border-left:3px solid var(--adapter); background:rgba(251,191,36,.06); padding:16px 18px; border-radius:0 12px 12px 0; margin-top:22px}
+  .callout .mono{color:#ffe6a1}
+  ul.clean{list-style:none; padding:0; margin:14px 0; display:flex; flex-direction:column; gap:12px}
+  ul.clean li{display:grid; grid-template-columns:22px 1fr; gap:12px; font-size:15px; color:#c9d4e4}
+  ul.clean li .m{color:var(--ane); font-family:var(--mono)}
+  ul.caveat li .m{color:var(--danger)}
+  footer{padding:40px 0 70px; color:var(--dim); font-family:var(--mono); font-size:12px; border-top:1px solid var(--line)}
+  .tag-inline{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:6px; border:1px solid var(--line2); color:var(--muted)}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important; animation:none!important}}
+</style>
+
+<div class="wrap">
+
+  <section class="hero">
+    <p class="eyebrow">Apple Neural Engine · mutable weights · macOS 27</p>
+    <h1>Swap one weight file. The model on the Neural Engine predicts a different token.</h1>
+    <p class="lede">A transformer sits resident on the ANE, its base <b style="color:var(--base)">frozen</b>. A small <b style="color:var(--adapter)">LoRA adapter</b> is the only mutable piece. Swap the adapter and the model's next-token decision changes, while the base is never touched. This is Apple's own on-device adapter-serving mechanism, driven with our own model and our own adapters.</p>
+    <div class="kss">
+      <span class="chip"><span class="dot"></span>134 / 134 ops on ANE · CPU 0</span>
+      <span class="chip mono">base 6.8&nbsp;MB · frozen</span>
+      <span class="chip mono">adapter 512&nbsp;KB · mutable</span>
+    </div>
+
+    <div class="stage" aria-label="Interactive adapter swap">
+      <div class="stage-head">
+        <div>
+          <div class="eyebrow amber" style="margin-bottom:4px">Live swap</div>
+          <div class="muted" style="font-size:14px">Pick an adapter. Watch what moves and what stays locked.</div>
+        </div>
+        <div class="seg" role="group" aria-label="Choose adapter">
+          <button id="btnA" aria-pressed="true" onclick="setAdapter('A')">adapter <span class="k">A</span></button>
+          <button id="btnB" aria-pressed="false" onclick="setAdapter('B')">adapter <span class="k">B</span></button>
+        </div>
+      </div>
+
+      <div class="pipe-scroll">
+        <div class="pipe">
+          <div class="node"><span class="lbl">input</span><span class="val">embedded<br>tokens</span></div>
+          <span class="arrow">›</span>
+          <div class="node base frozen"><span class="lbl">transformer base</span><div class="bar"></div><span class="val">4 blocks · attn+MLP</span></div>
+          <span class="arrow">›</span>
+          <div class="node base frozen"><span class="lbl">LM head · base</span><div class="bar"></div><span class="val">base_head(h)</span></div>
+          <span class="arrow" style="color:var(--adapter)">+</span>
+          <div class="node adapter" id="adNode"><span class="lbl" style="color:var(--adapter)">LoRA adapter · mutable</span><div class="bar"></div><span class="val" id="adVal">adapter A</span></div>
+          <span class="arrow">›</span>
+          <div class="node out"><span class="lbl">argmax</span><span class="val">predicted<br>token</span></div>
+        </div>
+      </div>
+
+      <div class="readout">
+        <div class="tokbox">
+          <span class="cap">Predicted next token</span>
+          <span class="tok" id="tokDisp">436</span>
+          <span class="toksub" id="tokSub">max logit 17.08 · via adapter A</span>
+          <div class="vocab">
+            <div class="track"><div class="ticks"></div><div class="mark" id="vmark" style="left:43.6%"></div></div>
+            <div class="scale"><span>token 0</span><span>vocab = 1000</span></div>
+          </div>
+          <div class="frozenrow">
+            <span class="chip mono"><span style="color:var(--base)">🔒 base</span> md5 b1cc1e35 · unchanged</span>
+            <span class="chip mono" id="adchip"><span style="color:var(--adapter)">◆ adapter</span> A</span>
+          </div>
+        </div>
+
+        <div class="term" aria-live="polite">
+          <div class="thead">aned kernel log · on swap</div>
+          <div class="ln"><span class="d">create:</span> withVnodeAllocation sectionSize: <span class="b">0x80000</span> <span class="d">(512 KB adapter cluster)</span></div>
+          <div class="ln"><span class="g">aneVnodeTrustVerification:</span> AppleIntelligence DataVault verification succeeded</div>
+          <div class="ln"><span class="d">patchCluster:</span> mutableClusterIndex <span class="a">0</span> · fresh patching <span class="g">completed</span></div>
+          <div class="ln"><span class="d">initSplitKernelSections:</span> base section_size <span class="b">6811776</span> <span class="d">(untouched)</span></div>
+          <div class="ln" id="logtok"><span class="d">predict:</span> next token = <span class="a">436</span> · base bytes identical</div>
+        </div>
+      </div>
+    </div>
+    <p class="muted" style="font-size:13px; margin-top:16px">Every number here is measured on an M5 Pro, macOS 27. The model is small and untrained, so token 436 vs 544 carries no meaning. What is real is the <b>mechanism</b>: swapping the adapter changes the decision, the base never moves.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">The anatomy</p>
+    <h2>One resident base, a small mutable cluster beside it</h2>
+    <p class="lede">When aned compiles the model, the frozen base becomes one kernel section. The adapter, declared mutable, becomes a separate cluster. A swap re-patches only that cluster.</p>
+
+    <div class="anat">
+      <div class="layers">
+        <div class="layer">
+          <span class="name">on the ANE</span>
+          <div class="memrow">
+            <div class="seg-base">frozen base kernel section · 6.8 MB · never re-patched</div>
+            <div class="seg-ad">adapter<br>512 KB</div>
+          </div>
+        </div>
+        <div class="layer">
+          <span class="name">what a swap does</span>
+          <div class="memrow" style="border:none">
+            <div class="seg-base" style="border-radius:9px; background:rgba(56,189,248,.06); border:1px dashed var(--line2); color:var(--dim); border-right:1px dashed var(--line2)">stays resident, byte-identical (md5 unchanged)</div>
+            <div class="seg-ad" style="border-radius:9px; margin-left:6px; background:rgba(251,191,36,.14); border:1px solid rgba(251,191,36,.4)">re-patched<br>~µs</div>
+          </div>
+        </div>
+      </div>
+      <div class="grid g3" style="margin-top:22px">
+        <div class="card base-c"><h3>Frozen base</h3><div class="num">6.8 MB</div><p class="muted">Compiled once, resident on the ANE. Not in the mutable set, so the swap never rewrites it.</p></div>
+        <div class="card adapter-c"><h3>Mutable adapter</h3><div class="num">512 KB</div><p class="muted">Declared mutable in the model. Its own kernel cluster, patched from a weight file at swap time.</p></div>
+        <div class="card ane-c"><h3>Trust</h3><div class="num">path</div><p class="muted">The ANE trusts the adapter file by its directory (an AppleIntelligence path-prefix), not a content signature. That is what lets our own weights in.</p></div>
+      </div>
+      <div class="callout">
+        <b>It is a bind, not a live rewrite.</b> <span class="muted">Each swap creates a fresh program instance over the resident base and patches the adapter cluster. The base is reused; the adapter is re-bound. It is per-request routing, not editing weights mid-generation.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Why it matters</p>
+    <h2>The same shape, on a full LLM</h2>
+    <p class="lede">The toy proves the mechanism. On a real 8B, the economics are the whole point: the base is gigabytes and stays resident, the LoRA is a sliver and is all you swap. Bigger base, better the deal.</p>
+
+    <div class="scaleblk">
+      <div class="scalecard live">
+        <div class="tag">● measured · our transformer</div>
+        <h3 style="margin-top:10px">Toy transformer</h3>
+        <div class="barwrap">
+          <div class="barrow"><span class="k">base</span><div class="track"><div class="fill base" style="width:93%">6.8 MB · frozen</div></div></div>
+          <div class="barrow"><span class="k">adapter</span><div class="track"><div class="fill ad" style="width:7%">512 KB</div></div></div>
+        </div>
+        <div class="ratio">swap cost ≈ <b>1 / 13</b> of the model · base stays put</div>
+      </div>
+
+      <div class="scalecard proj">
+        <div class="tag">◇ how it scales · 8B LoRA</div>
+        <h3 style="margin-top:10px">Real LLM <span class="tag-inline">illustrative</span></h3>
+        <div class="barwrap">
+          <div class="barrow"><span class="k">base</span><div class="track"><div class="fill base" style="width:99.5%">~7.5 GB · frozen, resident</div></div></div>
+          <div class="barrow"><span class="k">adapter</span><div class="track"><div class="fill ad" style="width:2.2%; min-width:54px; padding-left:6px">~40 MB</div></div></div>
+        </div>
+        <div class="ratio">swap cost ≈ <b>1 / 200</b> of the model · base never re-streams</div>
+      </div>
+    </div>
+    <p class="muted" style="font-size:13.5px; margin-top:18px">The 8B figures are illustrative, not measured. But the mechanism is identical: the base is compiled and resident, only the adapter is a mutable cluster. Keeping one 7.5 GB base warm and swapping a 40 MB adapter per request is how on-device adapter serving stays cheap. That is the shape we demonstrated on our own model.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">What is real</p>
+    <h2>Measured, and honestly bounded</h2>
+    <div class="grid g2">
+      <div>
+        <ul class="clean">
+          <li><span class="m">✓</span><span><b>Our own transformer</b> (multi-head attention, MLP, LayerNorm, LM head) places <b>134 / 134</b> ops on the ANE, no CPU fallback.</span></li>
+          <li><span class="m">✓</span><span><b>Swap changes the decision:</b> adapter A predicts token 436, adapter B predicts 544. Deterministic on repeat.</span></li>
+          <li><span class="m">✓</span><span><b>Base frozen:</b> its weight file is byte-identical across swaps. Only the adapter file changes.</span></li>
+          <li><span class="m">✓</span><span><b>Efficient split in the kernel log:</b> base = one 6.8 MB section; adapter = a separate 512 KB mutable cluster, fresh-patched per swap.</span></li>
+        </ul>
+      </div>
+      <div>
+        <ul class="clean caveat">
+          <li><span class="m">!</span><span><b>Small and untrained.</b> This is an architecture demo of the mechanism, not a trained 8B. The token ids are arbitrary.</span></li>
+          <li><span class="m">!</span><span><b>Needs SIP off</b> to write the trusted directory. This is Apple's internal mechanism, not a stock-Mac feature.</span></li>
+          <li><span class="m">!</span><span><b>Bind, not mid-generation.</b> A swap is a fresh program instance per run, not editing weights while a token stream is in flight.</span></li>
+          <li><span class="m">!</span><span><b>Apple's mechanism is instrumental.</b> The transformer, the LM head and the adapters are ours; the mutable-weight path is Apple's.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="wrap">
+    M5 Pro · macOS 27 (26A5388g) · CoreML / aned mutable-weight path · numbers measured this build. cf. Orion for the adapter-as-input route, a distinct approach.
+  </footer>
+
+</div>
+
+<script>
+  var DATA = {
+    A:{token:436, logit:"17.08", pct:43.6, sub:"max logit 17.08 · via adapter A"},
+    B:{token:544, logit:"22.56", pct:54.4, sub:"max logit 22.56 · via adapter B"}
+  };
+  var current="A";
+  function setAdapter(k){
+    if(k===current) return;
+    current=k;
+    var d=DATA[k];
+    document.getElementById("btnA").setAttribute("aria-pressed", k==="A");
+    document.getElementById("btnB").setAttribute("aria-pressed", k==="B");
+    var tok=document.getElementById("tokDisp");
+    tok.classList.add("flip");
+    setTimeout(function(){ tok.textContent=d.token; tok.classList.remove("flip"); }, 170);
+    document.getElementById("tokSub").textContent=d.sub;
+    document.getElementById("vmark").style.left=d.pct+"%";
+    document.getElementById("adVal").textContent="adapter "+k;
+    document.getElementById("adchip").innerHTML='<span style="color:var(--adapter)">◆ adapter</span> '+k;
+    document.getElementById("logtok").innerHTML='<span class="d">predict:</span> next token = <span class="a">'+d.token+'</span> · base bytes identical';
+    var node=document.getElementById("adNode");
+    node.classList.remove("patch"); void node.offsetWidth; node.classList.add("patch");
+  }
+</script>
