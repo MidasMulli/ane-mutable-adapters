@@ -13,20 +13,43 @@ Usage:
     <const_name> e.g. "adapt_weight" (the parallel LoRA head) or "fin_weight".
 Then drop a valid single-tensor adapter blob at <model.mlmodelc>/weights/adapter.bin
 (build_adapter.py produces one; its tensor sits at offset 64).
+
+For several mutable regions at once (a multi-layer LoRA), see split_adapter_multi.py.
 """
-import re, sys
+import os, re, sys
 
 model_dir, const = sys.argv[1], sys.argv[2]
 mil = f"{model_dir}/model.mil"
 s = open(mil).read()
 cname = f"{const}_to_fp16"
 
-# match the target const's full single-line statement, up to its BLOBFILE offset close
-stmt_re = re.compile(re.escape(cname) + r' = const\(\)\[.*?offset = uint64\(\d+\)\)\)\]')
+# Match the target const's full single-line statement, up to its BLOBFILE offset close.
+# ANCHORED: the character before the name must not be an identifier character. Without
+# this, a short name matches inside a longer one (e.g. "adapt_weight_to_fp16" matches
+# inside "blocks_0_oadapt_weight_to_fp16") and the WRONG const is silently split,
+# producing a model that fails to load with a confusing error code.
+stmt_re = re.compile(r'(?:^|[^A-Za-z0-9_])(' + re.escape(cname) +
+                     r' = const\(\)\[.*?offset = uint64\(\d+\)\)\)\])', re.M)
 m = stmt_re.search(s)
 if not m:
     sys.exit(f"error: const '{cname}' with a weight.bin BLOBFILE not found in {mil}")
-stmt = m.group(0)
+stmt = m.group(1)
+
+# Guard the shape contract: the adapter blob must hold exactly this const's tensor.
+# A silent size mismatch is the other way this fails confusingly at load time.
+shape_m = re.search(r'tensor<fp16, \[([0-9, ]+)\]>', stmt)
+blob = os.path.join(model_dir, "weights", "adapter.bin")
+if shape_m and os.path.exists(blob):
+    dims = [int(d) for d in shape_m.group(1).split(",")]
+    want = 1
+    for d in dims: want *= d
+    want *= 2                                   # fp16
+    have = os.path.getsize(blob) - 64           # tensor sits at offset 64
+    if have < want:
+        sys.exit(f"error: adapter.bin holds {have} bytes after the 64-byte offset but "
+                 f"'{cname}' needs {want} (shape {dims}, fp16). Rebuild the adapter at "
+                 f"matching dimensions (see build_adapter.py).")
+
 new_stmt = re.sub(
     r'BLOBFILE\(path = string\("@model_path/weights/weight\.bin"\), offset = uint64\(\d+\)\)',
     'BLOBFILE(path = string("@model_path/weights/adapter.bin"), offset = uint64(64))',

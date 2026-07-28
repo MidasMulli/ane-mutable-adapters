@@ -36,6 +36,8 @@ Files:
 - `build/build_transformer.py`  the ANE-friendly transformer with a split LoRA head
 - `build/build_adapter.py`      builds a single-tensor adapter blob (two distinct ones, A and B)
 - `build/split_adapter.py`      repoints the adapter const to `adapter.bin` and declares it mutable
+- `build/split_adapter_multi.py` the same for N consts at once, for a multi-layer adapter
+- `harness/swap_multi.mm`       swap harness taking N key/URL pairs
 - `harness/swap.mm`             loads the base, injects one adapter, reads the predicted token
 - `harness/ane.entitlements`    the ANE mutable-weight entitlements (self-signed, honored only under SIP off)
 - `chargpt/`                    the **trained** follow-up: train a char-GPT, train two adapters, swap them on the ANE
