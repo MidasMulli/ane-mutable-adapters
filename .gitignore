@@ -1,8 +1,18 @@
-# build artifacts
+# build artifacts — NEVER commit generated model bytes / compiled weights
 *.mlpackage/
 *.mlmodelc/
+*.aimodel/
+*.aimodelc/
+*.mpsgraphpackage/
 _out/
 _a*/
+# loose model blobs (weights / adapters / checkpoints)
+weight.bin
+adapter*.bin
+*.pt
+*.hwx
+# built harness + compile intermediates
 swap
+gen
 *.o
 __pycache__/
