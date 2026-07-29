@@ -40,9 +40,16 @@ Files:
 - `harness/swap_multi.mm`       swap harness taking N key/URL pairs
 - `harness/swap.mm`             loads the base, injects one adapter, reads the predicted token
 - `harness/ane.entitlements`    the ANE mutable-weight entitlements (self-signed, honored only under SIP off)
+- `harness/build_harness.sh`    builds + entitles both harnesses (`run.sh` calls it)
 - `chargpt/`                    the **trained** follow-up: train a char-GPT, train two adapters, swap them on the ANE
 - `results/`                    the S1, S4 and N1-N4 findings, plus a verbatim kernel-log excerpt
 - `media/`                      a mechanism video, a terminal-replay video, an interactive explainer
+
+> **The entitlements are mandatory.** The swap harness must be codesigned with `harness/ane.entitlements`
+> (`build_harness.sh` does this). Without those four `com.apple.aned.private.*` + `iokit-user-access`
+> entitlements, the e5rt mutable-weight plan build fails at load with error **-14**
+> (`Failed to build the model execution plan using ... model.mil`): a tooling gate, not a model problem.
+> The entitlements are grantable only under SIP off + `amfi_get_out_of_my_way=1`.
 
 ## The trained follow-up (`chargpt/`)
 

@@ -36,8 +36,7 @@ sudo cp adT_A.mlmodelc/weights/weight.bin "$ANE_TRUSTED_ADAPTER_DIR/txf/adapterA
 sudo cp adT_B.mlmodelc/weights/weight.bin "$ANE_TRUSTED_ADAPTER_DIR/txf/adapterB.bin"
 
 echo "== 5. build + sign the swap harness =="
-clang++ -fobjc-arc -framework Foundation -framework CoreML harness/swap.mm -o swap
-codesign -f -s - --entitlements harness/ane.entitlements swap
+bash harness/build_harness.sh   # builds + entitles BOTH swap and swap_multi (see script header re: -14)
 
 echo "== 6. swap adapter A vs B over the frozen base -> predicted token =="
 for T in A B A B; do
