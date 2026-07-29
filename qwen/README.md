@@ -44,6 +44,10 @@ export ANE_TRUSTED_ADAPTER_DIR=<an AppleIntelligence AppModelAssets path-prefix,
 bash run.sh                               # generates on the ANE under each adapter, swapping the one file
 ```
 
+Python deps: `torch`, `transformers`, `coremltools`, `safetensors`, `huggingface_hub`. If your `python3`
+does not have them, point the scripts at one that does with `export PYTHON=/path/to/python3` (used by
+`run.sh`; run the `.py` steps with that interpreter directly).
+
 Outputs go to `qwen/_out/` (override with `QWEN_OUT`); model weights and adapters are gitignored, corpora
 download on first run. Knobs: `QWEN_LORA_RANK` (default 16), `QWEN_STEPS` (default 400), `QWEN_PROMPT`,
 `QWEN_NGEN`.
