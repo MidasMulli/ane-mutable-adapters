@@ -14,8 +14,9 @@ Same requirements banner as the top-level README: **research environment only** 
   The port is faithful: logits cosine **1.000000** against Hugging Face on a reference prompt.
 - The model places fully on the Neural Engine (CoreML compute plan: all compute ops on ANE, CPU 0).
 - Two LoRA adapters trained on the frozen base (Shakespeare and Alice in Wonderland), deployed as a
-  **parallel delta** on the q and v projections of all 28 layers (`proj = base(x) + delta(x)`, base frozen
-  in `weight.bin`, the 56 deltas mutable in one `adapter.bin`).
+  **two-conv low-rank parallel delta** on the q and v projections of all 28 layers
+  (`proj = base(x) + B(A(x))`, base frozen in `weight.bin`, the 112 low-rank factors mutable in one
+  **~4.6 MB** `adapter.bin`).
 - Swapping only the mutable adapter over the resident base changes what the model writes:
 
 ```
@@ -28,10 +29,13 @@ The base `weight.bin` (one file, ~1.4 GB) is used for both adapters and is never
 
 ## How the deep adapter is deployed
 
-A LoRA is trained as `delta = (alpha/r) * B @ A` (low rank). For deployment it is folded to a full
-`[out, in]` matrix and placed as a **parallel** conv next to the frozen base projection. Only that parallel
-delta is declared mutable (CoreML `BlobFileMutabilityInfo`); the base projection stays frozen. All 56 deltas
-(q and v across 28 layers) are packed into one `adapter.bin`, so a task is one file to swap.
+A LoRA is trained as `delta = (alpha/r) * B @ A` (low rank). It is deployed by keeping the two factors as
+two small parallel convs next to the frozen base projection: `proj = base(x) + B(A(x))`, with A `[r,D]` and
+B `[out,r]` both declared mutable (CoreML `BlobFileMutabilityInfo`) and the base projection frozen. All 112
+factors (A and B, q and v, across 28 layers) are packed into one `adapter.bin`, so a task is one file to
+swap. Shipping the factors instead of the folded dense `[out,in]` delta makes the adapter **~38x smaller**
+(~4.6 MB vs ~176 MB) and is token-identical on the ANE. (The `alpha/r` scale is folded into A at pack time
+so the model graph carries no scalar; otherwise coremltools' `fuse_conv_scale` rewrites the B consts.)
 
 ## Run it
 
