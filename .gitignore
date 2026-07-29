@@ -17,3 +17,4 @@ gen
 *.o
 __pycache__/
 swap_multi
+gen_qwen

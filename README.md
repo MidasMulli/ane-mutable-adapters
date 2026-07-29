@@ -42,6 +42,7 @@ Files:
 - `harness/ane.entitlements`    the ANE mutable-weight entitlements (self-signed, honored only under SIP off)
 - `harness/build_harness.sh`    builds + entitles both harnesses (`run.sh` calls it)
 - `chargpt/`                    the **trained** follow-up: train a char-GPT, train two adapters, swap them on the ANE
+- `qwen/`                       the **real-model** follow-up: the same on a released pretrained LLM (Qwen3-0.6B)
 - `results/`                    the S1, S4 and N1-N4 findings, plus a verbatim kernel-log excerpt
 - `media/`                      a mechanism video, a terminal-replay video, an interactive explainer
 
@@ -74,6 +75,15 @@ python3 build_gen_assets.py       # builds the generation assets
 Outputs go to `chargpt/_out/` by default (override with `CHARGPT_OUT`). Model weights are gitignored;
 the corpus is downloaded on first run. See
 `results/n1_n4_solved_trained_chargpt_adapter_swap_changes_generation_on_ane.md` for the measured record.
+
+## A real pretrained model (`qwen/`)
+
+`chargpt/` is a model we trained ourselves. `qwen/` does the same on a **released, pretrained LLM**:
+Qwen3-0.6B (GQA, RoPE, per-head q/k RMSNorm, SwiGLU) ported to the ANE-friendly conv form (logits cosine
+1.000000 vs Hugging Face), with two LoRA adapters (Shakespeare, Alice) trained on the frozen base and
+deployed as a **deep parallel delta** on q and v across all 28 layers (56 deltas in one mutable adapter
+file). Swapping the one adapter over the resident base changes the generated text while the base stays
+byte-identical. See `qwen/README.md`.
 
 ## Scope and honesty
 
