@@ -18,3 +18,4 @@ gen
 __pycache__/
 swap_multi
 gen_qwen
+.DS_Store
