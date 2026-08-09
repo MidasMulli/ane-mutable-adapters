@@ -5,6 +5,11 @@
 # mutable-weight ANE plan build fails at load with error -14
 # ("Failed to build the model execution plan using ... model.mil").
 # The entitlements are honored only under SIP off + amfi_get_out_of_my_way=1.
+#
+# -14 is NOT specific to entitlements. It is a generic plan-build failure code;
+# several distinct causes produce this same code and message, including a
+# malformed per-weight MILBlob metadata header in the adapter blob. A -14 on an
+# already-entitled binary is undiagnosed, not explained. See README.md.
 set -e
 cd "$(dirname "$0")/.."
 ENT=harness/ane.entitlements

@@ -47,10 +47,18 @@ Files:
 - `media/`                      a mechanism video, a terminal-replay video, an interactive explainer
 
 > **The entitlements are mandatory.** The swap harness must be codesigned with `harness/ane.entitlements`
-> (`build_harness.sh` does this). Without those four `com.apple.aned.private.*` + `iokit-user-access`
-> entitlements, the e5rt mutable-weight plan build fails at load with error **-14**
-> (`Failed to build the model execution plan using ... model.mil`): a tooling gate, not a model problem.
-> The entitlements are grantable only under SIP off + `amfi_get_out_of_my_way=1`.
+> (`build_harness.sh` does this), and they are grantable only under SIP off + `amfi_get_out_of_my_way=1`.
+> An unentitled binary fails the e5rt mutable-weight plan build at load with error **-14**
+> (`Failed to build the model execution plan using ... model.mil`).
+>
+> **But -14 does not mean "missing entitlements".** It is a **generic plan-build failure code**, and
+> in our own work several distinct causes produced exactly this code and this message. Entitlement is
+> only the one you hit first. In particular, a correctly entitled binary can still -14 on a problem
+> with the adapter blob itself: each weight in `adapter.bin` carries a 64-byte MILBlob metadata header
+> (sentinel `0xdeadbeef`), and a blob that is byte-wrong there fails plan-build the same way.
+>
+> **So: -14 with the entitlements in place is undiagnosed, not explained.** If you have signed the
+> harness and still see it, suspect how the blob was written before you suspect the mechanism.
 
 ## The trained follow-up (`chargpt/`)
 

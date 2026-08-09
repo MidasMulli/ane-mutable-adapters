@@ -18,7 +18,7 @@ PY="${PYTHON:-python3}"
 echo "== 1. host assets (fp16 embedding + prompt ids) =="
 $PY gen_io.py prep "$PROMPT"
 
-echo "== 2. build + entitle gen_qwen (mandatory, or the mutable plan build -14s) =="
+echo "== 2. build + entitle gen_qwen (mandatory; unentitled -> -14, though -14 is generic) =="
 clang++ -O2 -fobjc-arc -framework Foundation -framework CoreML gen_qwen.mm -o gen_qwen
 codesign -f -s - --entitlements ../harness/ane.entitlements gen_qwen
 

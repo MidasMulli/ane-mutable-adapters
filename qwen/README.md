@@ -7,6 +7,8 @@ Engine, and swap a trained LoRA adapter over it so the generated text changes re
 
 Same requirements banner as the top-level README: **research environment only** (SIP off +
 `amfi_get_out_of_my_way=1`), and the swap harness must be entitled or the mutable plan build fails with -14.
+Note that -14 is a generic plan-build code with several distinct causes -- see the -14 note in the
+top-level README before concluding an entitlement problem.
 
 ## What it shows
 

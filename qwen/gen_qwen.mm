@@ -6,6 +6,8 @@
 // host-side fp16 embedding lookup -> ANE forward over a 64-token window -> argmax -> append.
 // Prints the generated token ids (decode with decode.py). Requires the ane.entitlements (see
 // harness/build_harness.sh); an unentitled binary fails the mutable plan build with error -14.
+// -14 is generic, though: several distinct causes produce it, so a -14 from an entitled
+// binary is undiagnosed rather than an entitlement problem. See README.md.
 #import <Foundation/Foundation.h>
 #import <CoreML/CoreML.h>
 #import <objc/message.h>

@@ -40,5 +40,5 @@ Retires the **"untrained"** caveat that rode the shipped post/repo/videos. No lo
 - The adapter here is a **head-only** adapter (parallel LM head, D→V): the swap re-maps the output projection given the frozen base's hidden state (a visible style shift). A deeper multi-layer LoRA is a natural next step; the head adapter is the single-blob form matching the proven mechanism.
 - SIP-off travels. Swap-at-bind (per-request), not mid-generation. Embedding + sampling host-side; transformer body on the ANE.
 
-## Artifacts (scratchpad + ~/Desktop/ane-coreai-debug)
+## Artifacts (scratchpad + ~/Desktop/cowork/ane-coreai-debug)
 `train_chargpt.py` (base), `train_adapters.py` (A/B), `build_chargpt_ane.py` (N2 placement), `build_gen_assets.py` (split + adapter blobs + emb/vocab), `gen.mm` (on-ANE generation harness). Checkpoint `chargpt.pt`, adapters `adapters.pt`. Base+adapter split `cgpt.mlmodelc`; adapterA/B.bin at the trusted path.
