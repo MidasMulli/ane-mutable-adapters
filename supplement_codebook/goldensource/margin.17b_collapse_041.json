@@ -1,0 +1,27 @@
+{
+ "key": "margin.17b_collapse_041",
+ "value": null,
+ "unit": "logits",
+ "convention": "the collapsed-era top-1 margin of the 1.7B deployed fp16 range-collapse episode, as quoted in §2.8 drafts",
+ "kind": "MEASUREMENT",
+ "status": "WITHDRAWN",
+ "article": "Qwen3-1.7B deployed fp16, pre-RESID_SCALE revision (the confounded deployed_vs_port run)",
+ "tier": "deployed",
+ "arm": "collapsed-era",
+ "n": null,
+ "producing_script": "deployed_vs_port.py (confounded revision pair)",
+ "command": null,
+ "raw_path": null,
+ "raw_status": "MISSING",
+ "replication": {
+  "status": "NONE",
+  "n_independent_runs": 0,
+  "separation": "n/a",
+  "note": "⛔ 0.41 MATCHES NO RECORD ON DISK AT ALL -- both surviving contemporaneous records (the 2026-08-11 cornerstone packet, 20:00, and the instrument's reference header, mtime 09:53 same day) say 0.30, and G1 adjudication finds those two are NOT independent (same author, same session, same run's console output, no producing raw): ONE unsourced contemporaneous record, transcribed at least twice. 0.41 is worse-sourced than 84.4 was -- 84.4 at least survived as an inherited header."
+ },
+ "cited_in": [
+  "§2.8 (to be replaced per the discharge packet)"
+ ],
+ "superseded_by": "the ORDER statement: 'a collapse to a near-tie, order 0.3 against a healthy 6.4' (per the single unsourced record) + margin.17b_onerev for the current-revision healthy pair",
+ "supersession_reason": "⛔ DO NOT CITE 0.41 ANYWHERE. It matches no record. The collapse itself is real (the six-token loop is documented across multiple surfaces) but its margin figure travels only as an order."
+}

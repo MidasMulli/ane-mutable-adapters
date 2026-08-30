@@ -1,0 +1,32 @@
+{
+ "key": "margin.17b_onerev",
+ "value": {
+  "margin_fp32": 6.6701,
+  "margin_deployed": 6.4219,
+  "cosine": 0.999522,
+  "argmax_agree": true
+ },
+ "unit": "logits",
+ "convention": "deployed_vs_port.py, fixed prompt 'The parties agree that all payments shall', read at last prompt position; deployed=CPU_AND_NE nomut int-free fp16-path artifact, port=fp32; SINGLE qwen_ane.py revision (post RESID_SCALE)",
+ "kind": "MEASUREMENT",
+ "status": "CANONICAL",
+ "article": "Qwen3-1.7B, no-LoRA nomut artifact (_nomutfix17/nomut.mlmodelc; archived copy vault/artifacts/mlmodelc_store_2026-08-11/qwen_nomut17.mlmodelc)",
+ "tier": "deployed",
+ "arm": "one-revision",
+ "n": 1,
+ "n_unit": "forward (deterministic; reproduces the 2026-08-11 packet record to 6 decimals)",
+ "producing_script": "ane-mutable-adapters/qwen/deployed_vs_port.py",
+ "command": "python3 deployed_vs_port.py Qwen/Qwen3-1.7B _nomutfix17/nomut.mlmodelc '_mixweb_Qwen3-1.7B pal8/emb.f16'",
+ "raw_path": "ane-mutable-adapters/qwen/_dvp_raws/dvp_17b_onerev_2026-08-24.json",
+ "raw_status": "LOCATED",
+ "replication": {
+  "status": "AGREES",
+  "n_independent_runs": 2,
+  "separation": "identical to 6 decimals (deterministic)",
+  "note": "fresh 2026-08-24 run reproduces the 2026-08-11 cornerstone-packet record (0.999522 / 6.67->6.42) exactly"
+ },
+ "cited_in": [
+  "S2.8 pin discharge (queued for CA batch)"
+ ],
+ "notes": "DISCHARGES the S2.8 provenance pin's re-derivation half. ⛔ THE COLLAPSED-ERA VALUE IS A SEPARATE OBJECT AND IT IS UNLOCATABLE-AND-INCONSISTENT: S2.8 quotes 6.67->0.41; the surviving records say 0.30 -- and G1 adjudication (2026-08-25) finds the packet and the docstring are NOT independent (same author/session/run, docstring mtime 09:53 precedes the 20:00 packet): ONE unsourced contemporaneous record; NO producing raw exists for either figure (the confounded run's raws were not kept). The 84.4 shape. The collapse must be cited qualitatively or as 0.30-per-packet-record with raw_status INHERITED_HEADER, never as 0.41."
+}

@@ -1,0 +1,106 @@
+hermeticity control: PASS (dev tree denied, interpreter reachable)
+CLEAN-ROOM GATE  tier=A
+supplement : /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook
+python     : /Users/midas/.mlx-env/bin/python3
+siblings   : cleanroom_gate.sh gate_run.log hermetic.sb supplement_codebook 
+host       : 27.0 26A5421a arm64
+
+════════ [A] A0-no-abs-paths ════════
+$ (cd /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook && bash -c 
+  # Excluded, each for a stated reason -- never widen this list to make the gate go green:
+  #   cleanroom_gate.sh    this file; the developer path IS the detector and the DEVTREE default
+  #   negative_controls.sh nothing (kept in scope deliberately)
+  #   vendor/harness/      upstream build sources, carried verbatim so they stay diffable
+  hits=$(grep -rn "/Users/midas" --include="*.py" --include="*.sh" . 2>/dev/null \
+         | grep -v "^./vendor/harness/" | grep -v "_UNFIXED_" | grep -v "gate_run.log" \
+         | grep -v "^./cleanroom_gate.sh:")
+  if [ -n "$hits" ]; then echo "⛔ developer paths in shipped scripts:"; echo "$hits" | head -20; exit 1; fi
+  echo "no /Users/midas in any shipped .py/.sh")
+no /Users/midas in any shipped .py/.sh
+exit=0
+
+════════ [A] A1-corpus ════════
+$ (cd /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook && /Users/midas/.mlx-env/bin/python3 make_data_codebook.py)
+  fit       2100 images from  700 combinations, band A
+  fit_train  1400 images  ·  fit_heldout 700 images (render hold-out: repetition 2 of 3)
+  compose    300 images from  150 combinations, band A
+  tier3      300 images from  150 combinations, band B
+  GATES: combinations disjoint (700/150) · held-out uses ONLY trained symbols · all 8 symbols present in both — ALL PASS
+  codebook: 0->e 1->b 2->f 3->c 4->a 5->d 6->h 7->g
+exit=0
+
+════════ [A] A2-train-resolves ════════
+$ (cd /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook && bash -c 
+  set -e
+  for f in data_codebook/fit_train.jsonl data_codebook/fit_heldout.jsonl; do
+    [ -s "$f" ] || { echo "⛔ missing trainer input: $f"; exit 1; }
+  done
+  /Users/midas/.mlx-env/bin/python3 - <<PYEOF
+import json, os, sys
+bad = 0
+for split in ("fit_train", "fit_heldout"):
+    for i, ln in enumerate(open(f"data_codebook/{split}.jsonl")):
+        p = json.loads(ln)["image"]
+        if not os.path.exists(p):
+            bad += 1
+            if bad < 3: print("  unresolvable:", p)
+print(f"  image paths checked, unresolvable = {bad}")
+sys.exit(1 if bad else 0)
+PYEOF
+  /Users/midas/.mlx-env/bin/python3 adapter_trainer.py --model /nonexistent-model --train data_codebook/fit_train.jsonl \
+      --heldout data_codebook/fit_heldout.jsonl --out /tmp/_gate_out --image-field image 2>&1 \
+    | grep -qiE "argument|required|usage:" && { echo "⛔ documented invocation does not parse"; exit 1; }
+  echo "documented trainer invocation parses and every corpus path resolves")
+  image paths checked, unresolvable = 0
+documented trainer invocation parses and every corpus path resolves
+exit=0
+
+════════ [A] A3-deploy-resolves ════════
+$ (cd /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook && bash -c 
+  out=$(bash ./deploy_codebook.sh 2>&1); rc=$?
+  echo "$out" | tail -8
+  if echo "$out" | grep -qiE "missing vendored|not found: .*(to_deploy|deploy_q35|gdn_4b)|No such file"; then
+    echo "⛔ a DEPENDENCY is missing, not just privilege"; exit 1; fi
+  if echo "$out" | grep -q "needs passwordless sudo"; then
+    echo "resolved as far as privilege allows: stopped at sudo (expected in Tier A)"; exit 0; fi
+  if echo "$out" | grep -q "compiled base target not found"; then
+    echo "resolved to the documented bring-up boundary (no compiled base present)"; exit 0; fi
+  exit $rc)
+⛔ compiled base target not found: /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook/_mlc_shadow/gdnmut_gc0.mlmodelc
+   Build it first (see README 'Bring-up'), or point SHADOW= at an existing gdnmut_gc0.mlmodelc.
+resolved to the documented bring-up boundary (no compiled base present)
+exit=0
+
+════════ [A] A4-decode-resolves ════════
+$ (cd /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook && bash -c 
+  out=$(/Users/midas/.mlx-env/bin/python3 -c "
+import sys, os
+sys.path.insert(0, \"vendor/tower\")
+try:
+    import ane_vlm
+    print(\"ane_vlm imported; DEMO=\" + ane_vlm.DEMO)
+except SystemExit as e:
+    print(\"NAMED-PRECONDITION: \" + str(e)[:200])
+except Exception as e:
+    print(\"UNNAMED-\" + type(e).__name__ + \": \" + str(e)[:200]); raise SystemExit(3)
+" 2>&1); rc=$?
+  echo "$out"
+  echo "$out" | grep -q "UNNAMED-" && { echo "⛔ decode path fails with an unnamed error"; exit 1; }
+  exit 0)
+NAMED-PRECONDITION: ⛔ bind harness directory not found: /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook/vendor/_demo
+   This holds the compiled embed/lmh
+exit=0
+
+═══════════════════ VERDICT ═══════════════════
+STAGE                        EXIT      CAUSE
+[A] A0-no-abs-paths          0(PASS)   (exit 0)
+[A] A1-corpus                0(PASS)   (exit 0)
+[A] A2-train-resolves        0(PASS)   (exit 0)
+[A] A3-deploy-resolves       0(PASS)   ⛔ compiled base target not found: /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook/_
+[A] A4-decode-resolves       0(PASS)   NAMED-PRECONDITION: ⛔ bind harness directory not found: /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom
+
+⚠️  TIER A ONLY. This proves the package is PORTABLE, not that the bind works.
+   Bind and on-ANE generation are Tier B and need bring-up (README).
+NOTE: inside the sandbox a missing dev-tree file reports 'Operation not permitted'
+      where a reader would see 'No such file'. Same outcome, different errno.
+GATE: PASS (tier A)

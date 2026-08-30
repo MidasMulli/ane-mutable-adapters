@@ -1,0 +1,74 @@
+hermeticity control: PASS (dev tree denied, interpreter reachable)
+CLEAN-ROOM GATE  tier=B
+supplement : /Users/midas/Desktop/cowork/ane-mutable-weights/supplement_codebook
+python     : /Users/midas/.mlx-env/bin/python3
+siblings   : _a_primary _a_primary_section _absence_attn _absence_lora.pt _ABSTRACT_DRAFT_2026-08-25.md _af _aj _bind_payload _binding_art _d_zerocopy _fvmlib_RAW_2026-08-11 _kernelcache _lffn_bind _post_art _qwen_bind _raw_rescued_2026-08-09 _rebind_size _style_pass_number_snapshot.json _vendor _warm_cold _z_zero _z_zero_ladder AAR_2026-08-27_arc_end_to_end.md adapter_substrate_flow.png adapter_swap_explainer.html agent_delegation_flow.png ANALYSIS_2026-08-28_training_frame_edges.md arxiv_metadata_abstract.txt arxiv_submission assemble_paper4.py assets BENCH_WINDOW.md BLUEPRINT_ARTIFACTS.md BLUEPRINT_DETAIL.md BLUEPRINT_HEAD_DETAIL.md BLUEPRINT_LESSONS.md BLUEPRINT.md BLUEPRINT.md.bak BLUEPRINT.md.bak_close BLUEPRINT.md.bak_pre_corrections BLUEPRINT.md.bak_pre_demote BLUEPRINT.md.bak_pre_facts BLUEPRINT.md.bak_pre_head BLUEPRINT.md.bak_pre_strike BLUEPRINT.md.bak.h3 BOOT_2026-08-13_CA.md BOOT_2026-08-13_op_form_solved.md bridge_adapter_distill build_pdf.py BUILD_SCOPE_llm_base_plus_adapter_on_ANE_2026-07-27.md BUILD_SCOPE_trained_ane_native_gpt_plus_lora_swap_2026-07-27.md capacity CODEBOOK_LIVE_DEMO_PLAN_2026-08-23.md CV4_SURVEY_SPEC_rescoped_2026-08-12.md DISK_AUDIT_2026-08-11.md docs endorsement_log.md export_provenance.py FINDING_2026-08-24_stage0_fedform_mlprogram_places.md FINDING_2026-08-28_E1_E2_locality_pagetable.md FINDING_2026-08-28_E3_selection_E5_screen.md FINDING_2026-08-28_PCAP_capacity_curves.md FINDINGS_2026-08-13_08B_SERVING_CONTRACT_AND_HARNESS_PREREAD.md FINDINGS_2026-08-13_TAXONOMY_the_ceiling_is_the_work.md FINDINGS_ledger_lora_2026-07-28.md FREEZE_CRITERIA_STATUS_2026-08-14.md gdn_mutable_swap_demo.mp4 GDN_MUTABLE_SWAP_scan_isolation_goaround_2026-07-29.md goldensource graphify-out housestyle kda_ane KDA_ANE_PHASE1_kimi_k3_hybrid_stack_runs_on_ANE_2026-07-28.md LEAD_2026-08-27_paper5_weights_dont_decay.md LOCATIONS.md make_latex.py N1_N4_SOLVED_trained_chargpt_adapter_swap_changes_generation_on_ANE_2026-07-28.md nano_gpt_adapter_testbench.html nano_kpu_reproduction_dashboard.html necessity opform_decode paper_figures paper4_arxiv_v2.tar.gz paper4_arxiv.tar.gz PAPER4_ASSEMBLED_DRAFT.md PAPER4_CLAIM_AUDIT_2026-08-23.md PAPER4_CORNERSTONE.md PAPER4_DRAFT_2026-08-24.pdf PAPER4_FACTS.md PAPER4_FACTS.md.bak_pre_adjudication PAPER4_FACTS.md.bak_pre_strike PAPER4_FINAL_DRAFT_2026-08-25.pdf PAPER4_FINAL.pdf PAPER4_OUTLINE_AND_CLAIM_INVENTORY.md PAPER4_OUTLINE_AND_CLAIM_INVENTORY.md.bak_pre_retitle PAPER4_REAUDIT_2026-08-23.json PAPER4_SECTION0_ABSTRACT.md PAPER4_SECTION1_DRAFT.md PAPER4_SECTION1_DRAFT.md.bak PAPER4_SECTION1_DRAFT.md.bak_pre_thesis PAPER4_SECTION2_DRAFT.md PAPER4_SECTION2_DRAFT.md.bak PAPER4_SECTION2_DRAFT.md.bak_pre_codebook PAPER4_SECTION2_DRAFT.md.bak_pre_offclass PAPER4_SECTION2_DRAFT.md.bak_pre_pair PAPER4_SECTION2_DRAFT.md.bak_pre_xref PAPER4_SECTION2_DRAFT.md.bak2 PAPER4_SECTION3_DRAFT.md PAPER4_SECTION3_DRAFT.md.bak_pre_bounds PAPER4_SECTION4_DRAFT.md PAPER4_SECTION4_DRAFT.md.bak PAPER4_SECTION4_DRAFT.md.bak_pre_parity PAPER4_SECTION4_TRAINING_SUBSECTION_DRAFT.md.CUT_2026-08-25 PAPER4_SECTION5_DRAFT.md PAPER4_SECTION5_DRAFT.md.bak_pre_undetermined PAPER4_SECTION6_DRAFT.md PAPER4_SECTION7_DRAFT.md PAPER4_SHIP.pdf paper4.aux paper4.log paper4.out paper4.pdf paper4.tex PLAN.md PREREG_2026-08-13_4B_conv_reemission.md PREREG_2026-08-13_abstain_strength_ladder.md PREREG_2026-08-13_answer_bearing_slices.md PREREG_2026-08-13_blind_fed_adjudication.md PREREG_2026-08-13_per_position_localisation.md PREREG_2026-08-13_taxonomy_run.md PREREG_2026-08-14_b17_mechanism_and_closed_book.md PREREG_2026-08-14_combination_and_context_scaling.md PREREG_2026-08-14_prompted_baseline.md PREREG_2026-08-23_fedform_characterization.md PREREG_2026-08-28_frame_edges_E1_E5.md PREREG_adapter_depth_head_vs_attention_2026-07-28.md PREREG_AF_two_adapter_swap_2026-08-10.md PREREG_AJ_agent_triggered_adapter_loop_2026-08-10.md PREREG_AK_domain_adapter_quality_2026-08-10.md PREREG_AL_three_strengthenings_2026-08-10.md PREREG_AM_horizon_and_rust_2026-08-10.md PREREG_ledger_lora_2026-07-28.md PRESERVATION_MANIFEST.json READ_2026-08-13_is_the_512_window_the_binding_constraint.md README.md REAL_QWEN_MUTABLE_LORA_SWAP_ON_ANE_2026-07-28.md REPO_PLAN.md REPO_SYNC_RECOMMENDATION_2026-08-11.md restamp restamp.c REVIEW_2026-08-30_paper4_preacceptance.md ROADMAP.md runtime S1_RESULT_base_adapter_split_2blob_injection_unsupported_2026-07-27.md S1_SOLVED_own_base_plus_own_lora_adapter_swap_on_ANE_2026-07-27.md S4_SOLVED_own_transformer_plus_lora_adapter_swap_changes_predicted_token_on_ANE_2026-07-27.md session_2026-07-28_scripts session_2026-07-29_8b_scripts ship_manifest.json ship.sh STAGE3a_FINDING_mutable_injection_needs_parallel_not_folded_2026-07-28.md supplement_codebook toolkit tools TOOLS_AND_FINDINGS_RECORD_2026-07-29.md TOOLS_COVERAGE_2026-08-06.md TOOLS.md X_POST_DRAFT_ane_mutable_weights_2026-07-27.md X_POST_DRAFT_kda_on_ane_2026-07-28.md X_POST_DRAFT_nano_kpu_reproduction.md X_POST_DRAFT_v2_transformer_lora_adapter_swap_2026-07-27.md X_POST_DRAFT_v3_trained_nanogpt_adapter_swap.md X_POST_SCOPE_adapter_training_on_ane_2026-08-06.md xpost_golden_path.html xpost_op_form_is_semantics.html 
+host       : 27.0 26A5421a arm64
+
+════════ [B] B1-deploy-live ════════
+$ (cd /Users/midas/Desktop/cowork/ane-mutable-weights/supplement_codebook && bash ./deploy_codebook.sh)
+  base weight.bin 6d698c24871a55b2  (must not move)
+  currently live in gc0_on.bin: d3e8ed5795caedee -> backing up
+=== convert checkpoint to deploy format ===
+  linear layers    [0, 1, 2, 4, 5, 6]... (18)
+  target: 96 adapter-backed consts
+  ✅ bijection asserted: every const maps to a distinct checkpoint site, shapes agree
+  wrote /tmp/codebook_deploy.pt  (48 sites, site_order persisted)
+=== build the mutable blobs (FORM=conv, the only form that composes) ===
+    sites=48 steps=None tw=None CE 0.0000 -> 0.0000
+  site-order assert PASS: 48 sites, trainer order == MIL reconstruction
+  wrote 96 factor blocks into 7.18 MB adapters  [EPS=1.0 EPSB=1.0 ARM=full FORM=conv]
+  gc0_on.bin  = the TRAINED factors from codebook_deploy.pt
+  gc0_off.bin = B zeroed (delta 0 -> base). NOT random: an honest OFF arm.
+=== stage under a distinct name AND as gc0_*, md5-verified both ways ===
+  on: d3e8ed5795caedee verified in both names
+  off: 6b24159202bfd156 verified in both names
+  distinct from any other staged arm: PASS (d3e8ed5795caedee)
+=== VERIFY=0 (fast stage for the live demo) — skipping the on-ANE 3-arm verify ===
+  base weight.bin CONSTANT (6d698c24871a55b2)
+exit=0
+
+════════ [B] B2-serve+decode ════════
+$ (cd /Users/midas/Desktop/cowork/ane-mutable-weights/supplement_codebook && bash -c 
+  (/Users/midas/.mlx-env/bin/python3 codebook_web.py >_gate_web.log 2>&1 &) ; sleep 12
+  curl -sf http://127.0.0.1:8711/rendered >/dev/null || { echo "⛔ demo server never came up"; tail -5 _gate_web.log; exit 1; }
+  img=$(curl -sf http://127.0.0.1:8711/rendered | /Users/midas/.mlx-env/bin/python3 -c "import json,sys;print(json.load(sys.stdin)[0][\"path\"])")
+  echo "decoding $img"
+  curl -sf -X POST http://127.0.0.1:8711/decode -d "{\"img\":\"$img\",\"arm\":\"on\"}" | head -c 300; echo
+  echo "DECODE returned")
+decoding data_cbmix_L1/compose/00000_0.png
+{"text": "aadd", "term": "eos", "ms": 3279, "bind_ms": 52.2, "arm": "on", "changed": true, "prev_arm": "off"}
+DECODE returned
+exit=0
+
+════════ [B] B3-accept ════════
+$ (cd /Users/midas/Desktop/cowork/ane-mutable-weights/supplement_codebook && /Users/midas/.mlx-env/bin/python3 demo_acceptance.py)
+  glyph: data_cbmix_L1/compose/00000_0.png
+  arm=off bind_ms= 53.7  term=cap   text='The image contains a stylized, abstract represen'
+  arm=on  bind_ms= 53.5  term=eos   text='aadd'
+  arm=on  bind_ms=  0.0  term=eos   text='aadd'
+  arm=off bind_ms= 52.8  term=cap   text='The image contains a stylized, abstract represen'
+
+  first-char accuracy: 6/8 = 0.750 (floor 0.375, chance 0.125, deployed reference 0.625 @ n=40)
+
+  PASS  G1_capability_gap
+  PASS  G2_bind_once
+  PASS  G3_byte_identity
+  PASS  G4_base_untouched
+  PASS  G5_blobs_distinct
+  PASS  G6_accuracy_rate
+
+  base weight.bin md5 6d698c24871a55b2f468a4a2d817fa40 -> 6d698c24871a55b2f468a4a2d817fa40
+  gc0_on d3e8ed5795caedeeaf3e6a8074487daf  gc0_off 6b24159202bfd156fd539a1d42d7b186
+VERDICT: PASS   raw -> /Users/midas/Desktop/cowork/ane-mutable-weights/supplement_codebook/_demo_acceptance.json
+exit=0
+
+═══════════════════ VERDICT ═══════════════════
+STAGE                        EXIT      CAUSE
+[B] B1-deploy-live           0(PASS)     ✅ bijection asserted: every const maps to a distinct checkpoint site, shapes agree
+[B] B2-serve+decode          0(PASS)   (exit 0)
+[B] B3-accept                0(PASS)   (exit 0)
+
+NOTE: inside the sandbox a missing dev-tree file reports 'Operation not permitted'
+      where a reader would see 'No such file'. Same outcome, different errno.
+GATE: PASS (tier B)

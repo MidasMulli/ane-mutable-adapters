@@ -1,0 +1,5 @@
+(version 1)
+(allow default)
+;; The clean room is only a clean room if the dev tree is unreachable.
+(deny file-read* file-write*
+  (subpath "/Users/midas/Desktop/cowork"))

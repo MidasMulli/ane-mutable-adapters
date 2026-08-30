@@ -1,0 +1,16 @@
+  (stub server up on :8799 — the controls below reach G6)
+═══ NC1: G6 must FAIL (not skip) when its corpus is absent ═══
+  ✅ CONTROL HELD  — absent corpus refused BY NAME at the G6 branch (exit 2), not skipped
+═══ NC2: G6 must FAIL when the corpus loads but matches nothing served ═══
+  ✅ CONTROL HELD  — present-but-unmatched corpus refused at the G6 branch (exit 2)
+═══ NC2b: with a GOOD corpus the same run must get PAST the G6 corpus checks ═══
+  ✅ CONTROL HELD  — the shipped corpus is accepted and G6 actually scores (exit 1; verdict is stub-driven, ignore it)
+═══ NC3: the corpus generator must REJECT a genuinely broken composition split ═══
+  ✅ CONTROL HELD  — untrained-symbol held-out is still rejected: ASSERTED: held-out uses symbols never trained: {7} -- that would test 
+═══ NC4: the same gate must ACCEPT the legitimate pure-scoring config ═══
+  ✅ CONTROL HELD  — pure scoring set (--train-combos 0) is accepted, not asserted
+═══ NC5: deploy must REFUSE a checkpoint whose md5 is not the paper's ═══
+  ✅ CONTROL HELD  — a same-named checkpoint with different bytes is refused before any bind
+
+═══════════════ NEGATIVE CONTROLS: 6 held, 0 lost ═══════════════
+Every gate exercised here was observed to fail on a known-bad input.

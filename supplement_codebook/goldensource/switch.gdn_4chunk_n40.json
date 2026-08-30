@@ -1,0 +1,39 @@
+{
+ "key": "switch.gdn_4chunk_n40",
+ "value": 77.3,
+ "unit": "ms",
+ "convention": "warm all-4-chunk rebind; the timed call replaces all 4 chunk MLModels (file stage AND bind); wall clock",
+ "kind": "MEASUREMENT",
+ "status": "CANONICAL",
+ "article": "chunked 4B linear-attention build (Qwen3.5-4B GatedDeltaNet), 4 chunks, 5,377,280 B per rebind",
+ "tier": "deployed",
+ "arm": "warm",
+ "n": 40,
+ "n_unit": "rebind calls",
+ "spread": {
+  "min": 75.5,
+  "max": 81.3,
+  "sd": 1.171
+ },
+ "producing_script": "ane-mutable-weights/tools/rebind_size_arms.py + tools/bind_seq_timed.mm",
+ "command": "python3 tools/rebind_size_arms.py",
+ "raw_path": "ane-mutable-weights/_rebind_size/anchor_20260808T120644/result.json",
+ "raw_sha256": "dfb6e2dbc5f6befe09249f68a635643f7d6fc8e1ec0573c60a5e4ee450e856bb",
+ "raw_status": "LOCATED",
+ "cited_in": [
+  "§3.5 (the pair + disagreement)",
+  "§4.3 (table row + article paragraph)",
+  "§4.4 (numerator note)",
+  "§4.5 (129x/133x multiples)"
+ ],
+ "took_check": "SELFTEST off vs on differ in the same run (|dmargin| 0.327, |dsumabs| 3577.66) — the swap is load-bearing",
+ "notes": "REPLACES the unlocatable 84.4/n=186 anchor for claims about this article. Both replicates (77.3, 79.8) are LOWER than the retired 84.4, so this correction makes the bound path's switch cost look BETTER — it was not made in our favour. The same sweep's 4-chunk arm reads 70.0 ms (n=60), still unexplained against these; see §3.5.",
+ "provenance": "Filed 2026-08-24 under the operator's supersession ruling.",
+ "replication": {
+  "status": "DISAGREES",
+  "n_independent_runs": 2,
+  "separation": "7.6 se (2.545 ms; se_diff 0.335 from within-run sds 1.171 / 1.767)",
+  "note": "run1 77.255 sd 1.171 range 75.5-81.3 (n=40); run2 79.800 sd 1.767 range 77.2-84.7 (n=40). Distributions overlap; means do not agree; cause NOT established. Systematic + uncharacterised, so DO NOT quote as a range. CHECK 7: separation must appear at every citation site (3.5, 4.3, 4.5).",
+  "sd_convention": "WITHIN-run, computed over each run's own all_ms list"
+ }
+}

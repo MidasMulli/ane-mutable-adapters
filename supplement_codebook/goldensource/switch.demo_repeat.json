@@ -1,0 +1,34 @@
+{
+ "key": "switch.demo_repeat",
+ "value": 0.0,
+ "unit": "ms",
+ "convention": "a REPEAT request on the already-bound adapter — no re-bind is issued; the resident weights are reused",
+ "kind": "MEASUREMENT",
+ "status": "CANONICAL",
+ "article": "0.8B vision codebook demo (gdnmut_gc0, 48 sites / 96 mutable sections) — THE BEDROCK DEMO",
+ "tier": "deployed",
+ "arm": "warm, same-arm repeat",
+ "n": 2,
+ "n_unit": "same-arm repeat binds in the gate sequence (plus 2 more on the live HTTP path)",
+ "spread": {
+  "min": 0.0,
+  "max": 0.0
+ },
+ "producing_script": "ane-mutable-adapters/vision/geni_rebind_gate.py + demo_acceptance.py",
+ "command": "/Users/midas/.mlx-env/bin/python3 geni_rebind_gate.py",
+ "raw_path": "ane-mutable-adapters/vision/_rebind_gate_2026-08-23.json",
+ "raw_sha256": "6f1d40cf4bcc71fe0ad6c15ad6017b7c646253829aa3ea1760fb4b72e12b2ec3",
+ "raw_status": "LOCATED",
+ "cited_in": [
+  "§3.1 prose (the per-change paragraph)"
+ ],
+ "took_check": "⛔ THE ZERO IS NOT A SKIPPED COMPUTATION. The repeat's emitted tokens are BYTE-IDENTICAL to a fresh bind's (greedy, fixed input) across three binaries and all four arms; an OFF-arm positive control emits DIFFERENT tokens in the same run; gc0_on/gc0_off blob md5s pinned unchanged; base weight.bin md5 constant. Fast-and-different would be a silent fallback to base/stale weights — that is the failure this gate exists to exclude, and it did not occur.",
+ "notes": "⇒ The operationally relevant switch cost is per ADAPTER CHANGE, not per inference. A cost model charging every request overstates it by the request count. ⚠️ SCOPE: this is the call-level bind only; the GDN graph's separate per-FORWARD mutable-buffer re-add is untouched and open.",
+ "provenance": "Operator ruling 2026-08-24: demo-provenance numbers are the stored ones.",
+ "replication": {
+  "status": "BYTE_IDENTICAL",
+  "n_independent_runs": 3,
+  "separation": "none - emitted tokens byte-identical across three binaries and all four arms",
+  "note": "the strongest replication state in the paper; the 0.0 ms is a genuine no-bind, took-checked by byte-identity with an off-arm positive control."
+ }
+}

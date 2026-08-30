@@ -1,0 +1,61 @@
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/473 [00:00<?, ?it/s]Loading weights: 100%|██████████| 473/473 [00:00<00:00, 6101.81it/s]
+  DERIVED --targets from the deploy target: in_proj_qkv,out_proj,q_proj,v_proj
+  DERIVED --rank from the deploy target: 16
+  DEPLOY TARGET: 96 sections · rank 16 · kinds ['in_proj_qkv', 'out_proj', 'q_proj', 'v_proj']
+  ✅ all 48 sites are bindable on the deployment target
+  48 sites  r=16 alpha=16  3.59M trainable (0.42% of params)
+  ⚠️  G6 NOT ENFORCED: pass --key-field to assert input-side disjointness
+  1400 train / 200 held-out · 2100 steps (6 epochs) · eval every 50
+/Users/midas/Desktop/cowork/ane-mutable-weights/toolkit/train/adapter_trainer.py:418: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:823.)
+  opt.step(); opt.zero_grad(); step += 1; curve.append(float(loss))
+    step 50/2100  train 3.2997  HELD-OUT 2.9744  <- best  (1.22s/step)
+    step 100/2100  train 2.9782  HELD-OUT 2.8898  <- best  (1.22s/step)
+    step 150/2100  train 2.8896  HELD-OUT 2.8351  <- best  (1.22s/step)
+    step 200/2100  train 2.8606  HELD-OUT 2.7194  <- best  (1.22s/step)
+    step 250/2100  train 2.8219  HELD-OUT 2.5507  <- best  (1.22s/step)
+    step 300/2100  train 2.5468  HELD-OUT 2.2517  <- best  (1.22s/step)
+    step 350/2100  train 2.4223  HELD-OUT 1.9151  <- best  (1.22s/step)
+    step 400/2100  train 1.8529  HELD-OUT 1.6367  <- best  (1.22s/step)
+    step 450/2100  train 1.5776  HELD-OUT 1.2757  <- best  (1.22s/step)
+    step 500/2100  train 1.4245  HELD-OUT 1.0880  <- best  (1.22s/step)
+    step 550/2100  train 1.1035  HELD-OUT 0.8462  <- best  (1.22s/step)
+    step 600/2100  train 1.1002  HELD-OUT 0.7530  <- best  (1.22s/step)
+    step 650/2100  train 0.7940  HELD-OUT 0.6461  <- best  (1.22s/step)
+    step 700/2100  train 0.7094  HELD-OUT 0.7027  (1.22s/step)
+    step 750/2100  train 1.0088  HELD-OUT 0.6971  (1.22s/step)
+    step 800/2100  train 0.6644  HELD-OUT 0.5512  <- best  (1.22s/step)
+    step 850/2100  train 0.7134  HELD-OUT 0.9425  (1.22s/step)
+    step 900/2100  train 0.7565  HELD-OUT 0.5382  <- best  (1.22s/step)
+    step 950/2100  train 0.5216  HELD-OUT 0.3740  <- best  (1.21s/step)
+    step 1000/2100  train 0.6381  HELD-OUT 0.4729  (1.21s/step)
+    step 1050/2100  train 0.6175  HELD-OUT 0.4768  (1.21s/step)
+    step 1100/2100  train 0.5256  HELD-OUT 0.5861  (1.21s/step)
+    step 1150/2100  train 0.5035  HELD-OUT 0.3806  (1.21s/step)
+    step 1200/2100  train 0.5137  HELD-OUT 0.3998  (1.22s/step)
+    step 1250/2100  train 0.5720  HELD-OUT 0.4054  (1.22s/step)
+    step 1300/2100  train 0.4105  HELD-OUT 0.3531  <- best  (1.22s/step)
+    step 1350/2100  train 0.4936  HELD-OUT 0.3924  (1.22s/step)
+    step 1400/2100  train 0.5983  HELD-OUT 0.3527  <- best  (1.22s/step)
+    step 1450/2100  train 0.3245  HELD-OUT 0.3254  <- best  (1.22s/step)
+    step 1500/2100  train 0.4792  HELD-OUT 0.3764  (1.21s/step)
+    step 1550/2100  train 0.4262  HELD-OUT 0.4385  (1.22s/step)
+    step 1600/2100  train 0.3783  HELD-OUT 0.4267  (1.21s/step)
+    step 1650/2100  train 0.4329  HELD-OUT 0.4311  (1.21s/step)
+    step 1700/2100  train 0.4559  HELD-OUT 0.6945  (1.21s/step)
+    step 1750/2100  train 0.5035  HELD-OUT 0.2989  <- best  (1.21s/step)
+    step 1800/2100  train 0.2659  HELD-OUT 0.3463  (1.21s/step)
+    step 1850/2100  train 0.3390  HELD-OUT 0.3140  (1.21s/step)
+    step 1900/2100  train 0.3548  HELD-OUT 0.3723  (1.21s/step)
+    step 1950/2100  train 0.3319  HELD-OUT 0.6634  (1.21s/step)
+    step 2000/2100  train 0.6569  HELD-OUT 0.7960  (1.21s/step)
+    step 2050/2100  train 0.3259  HELD-OUT 0.3362  (1.21s/step)
+    step 2100/2100  train 0.3089  HELD-OUT 0.3381  (1.21s/step)
+
+  ══ RESULT (Rule 86: the MINIMUM is the result, not the endpoint) ══
+    best held-out 0.2989 at step 1750  (83% through the run)
+    final         0.3381 at step 2100
+    ENDPOINT PENALTY +0.0392   <- what stopping at a fixed step count would have cost
+    ⛔ OVERTRAINING_SUSPECTED: held-out rose while train loss fell. USE /Users/midas/Desktop/cowork/ane-mutable-weights/supplement_codebook/run_v1/checkpoints/ckpt_step0001750.pt, NOT THE FINAL CHECKPOINT.
+    report -> /Users/midas/Desktop/cowork/ane-mutable-weights/supplement_codebook/run_v1/training_report.json

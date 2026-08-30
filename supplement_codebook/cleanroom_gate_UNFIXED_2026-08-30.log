@@ -1,0 +1,82 @@
+CLEAN-ROOM GATE
+supplement : /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook
+python     : /Users/midas/.mlx-env/bin/python3
+siblings   : cleanroom_gate.sh gate_run.log hermetic.sb supplement_codebook 
+host       : 27.0 26A5421a arm64
+
+════════ STAGE: 1-corpus   (make_data_codebook.py) ════════
+$ (cd /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook && /Users/midas/.mlx-env/bin/python3 make_data_codebook.py)
+  fit       2100 images from  700 combinations, band A
+  compose    300 images from  150 combinations, band A
+  tier3      300 images from  150 combinations, band B
+  GATES: combinations disjoint (700/150) · held-out uses ONLY trained symbols · all 8 symbols present in both — ALL PASS
+  codebook: 0->e 1->b 2->f 3->c 4->a 5->d 6->h 7->g
+exit=0
+
+════════ STAGE: 2-train    (adapter_trainer.py) ════════
+$ (cd /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook && /Users/midas/.mlx-env/bin/python3 adapter_trainer.py --deploy-target gdnmut_gc0.mlmodelc)
+usage: adapter_trainer.py [-h] --model MODEL --train TRAIN --heldout HELDOUT
+                          --out OUT [--in-field IN_FIELD]
+                          [--out-field OUT_FIELD] [--key-field KEY_FIELD]
+                          [--deploy-target DEPLOY_TARGET]
+                          [--image-field IMAGE_FIELD]
+                          [--image-prompt IMAGE_PROMPT] [--targets TARGETS]
+                          [--rank RANK] [--alpha ALPHA] [--lr LR] [--wd WD]
+                          [--epochs EPOCHS] [--batch BATCH]
+                          [--max-steps MAX_STEPS] [--eval-every EVAL_EVERY]
+                          [--patience PATIENCE] [--heldout-n HELDOUT_N]
+                          [--maxlen MAXLEN] [--seed SEED]
+                          [--eos-text EOS_TEXT] [--device DEVICE]
+                          [--init-from INIT_FROM]
+                          [--warm-restart-epochs WARM_RESTART_EPOCHS]
+adapter_trainer.py: error: the following arguments are required: --model, --train, --heldout, --out
+exit=2
+
+════════ STAGE: 3-convert+bind (deploy_codebook.sh) ════════
+$ (cd /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook && bash ./deploy_codebook.sh)
+cd: error retrieving current directory: getcwd: cannot access parent directories: Operation not permitted
+./deploy_codebook.sh: line 18: /usr/bin/sudo: Operation not permitted
+  base weight.bin   (must not move)
+./deploy_codebook.sh: line 22: /usr/bin/sudo: Operation not permitted
+  currently live in gc0_on.bin:  (chess a56ab4f9c86cfe4a) -> backing up
+./deploy_codebook.sh: line 24: /usr/bin/sudo: Operation not permitted
+=== convert checkpoint to deploy format ===
+/opt/homebrew/Cellar/python@3.11/3.11.15/Frameworks/Python.framework/Versions/3.11/Resources/Python.app/Contents/MacOS/Python: can't open file '/Users/midas/Desktop/cowork/ane-mutable-weights/toolkit/train/to_deploy_format.py': [Errno 1] Operation not permitted
+=== build the mutable blobs (FORM=conv, the only form that composes) ===
+/opt/homebrew/Cellar/python@3.11/3.11.15/Frameworks/Python.framework/Versions/3.11/Resources/Python.app/Contents/MacOS/Python: can't open file '/Users/midas/Desktop/cowork/gdn-coreml/deploy_q35_adapter.py': [Errno 1] Operation not permitted
+=== stage under a distinct name AND as gc0_*, md5-verified both ways ===
+./deploy_codebook.sh: line 33: /usr/bin/sudo: Operation not permitted
+./deploy_codebook.sh: line 34: /usr/bin/sudo: Operation not permitted
+md5: /Users/midas/Desktop/cowork/gdn-coreml/_q35_08b_adapters/gc0_on.bin: Operation not permitted
+./deploy_codebook.sh: line 36: /usr/bin/sudo: Operation not permitted
+./deploy_codebook.sh: line 37: /usr/bin/sudo: Operation not permitted
+  on:  verified in both names
+./deploy_codebook.sh: line 33: /usr/bin/sudo: Operation not permitted
+./deploy_codebook.sh: line 34: /usr/bin/sudo: Operation not permitted
+md5: /Users/midas/Desktop/cowork/gdn-coreml/_q35_08b_adapters/gc0_off.bin: Operation not permitted
+./deploy_codebook.sh: line 36: /usr/bin/sudo: Operation not permitted
+./deploy_codebook.sh: line 37: /usr/bin/sudo: Operation not permitted
+  off:  verified in both names
+./deploy_codebook.sh: line 43: /usr/bin/sudo: Operation not permitted
+  ⛔ codebook_on.bin IS IDENTICAL TO chess_on.bin -- deploy did not take
+exit=1
+
+════════ STAGE: 4-generate (codebook_web.py import) ════════
+$ (cd /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook && /Users/midas/.mlx-env/bin/python3 -c import codebook_web)
+
+exit=0
+
+════════ STAGE: 5-accept   (demo_acceptance.py) ════════
+$ (cd /private/tmp/claude-501/-Users-midas/c3d5d040-41d3-42e9-b663-a4a453b90537/scratchpad/cleanroom/supplement_codebook && /Users/midas/.mlx-env/bin/python3 demo_acceptance.py)
+⛔ PRECONDITION: demo server not reachable at http://127.0.0.1:8711 (URLError). Start it: CB_BIND=0.0.0.0 python3 codebook_web.py
+exit=2
+
+═══════════════════ VERDICT ═══════════════════
+STAGE                              EXIT   CAUSE
+1-corpus   (make_data_codebook.py) 0(PASS) (exit 0, no error line captured)
+2-train    (adapter_trainer.py)    2(FAIL) adapter_trainer.py: error: the following arguments are required: --model, --train, --heldout, --out
+3-convert+bind (deploy_codebook.sh) 1(FAIL) cd: error retrieving current directory: getcwd: cannot access parent directories: Operation not permitted
+4-generate (codebook_web.py import) 0(PASS) (exit 0, no error line captured)
+5-accept   (demo_acceptance.py)    2(FAIL) ⛔ PRECONDITION: demo server not reachable at http://127.0.0.1:8711 (URLError). Start it: CB_BIND=0.0.0.0 python3 codebook_web.py
+
+GATE: FAIL — the paper's end-to-end sentence is not satisfied by this artifact.

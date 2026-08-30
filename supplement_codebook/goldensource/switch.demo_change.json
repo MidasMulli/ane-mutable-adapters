@@ -1,0 +1,36 @@
+{
+ "key": "switch.demo_change",
+ "value": 52.0,
+ "unit": "ms",
+ "convention": "warm base<->adapter CHANGE on a model resident on the ANE; median of the arm-change binds in the gate sequence; wall clock, reported by the binary as bind_ms at GENIBEGIN",
+ "kind": "MEASUREMENT",
+ "status": "CANONICAL",
+ "article": "0.8B vision codebook demo (gdnmut_gc0, 48 sites / 96 mutable sections, 7.18 MB adapter blob) — THE BEDROCK DEMO",
+ "tier": "deployed",
+ "arm": "warm, arm-change",
+ "n": 4,
+ "n_unit": "arm-change binds across three binaries",
+ "spread": {
+  "min": 47.2,
+  "max": 56.3,
+  "note": "CHANGE-bind observations pooled across acceptance runs 2026-08-23/24: [47.2, 51.2, 51.1, 47.5] (rebind-every-call build) + [52.8, 53.1] (reuse build, change arms) + [52.4, 53.2, 55.7, 55.0, 54.3, 56.3] (2026-08-24 live). Earlier min 51.2 EXCLUDED the same file's own 51.1 and 47.x rows -- corrected 2026-08-24 (CA M6)."
+ },
+ "producing_script": "ane-mutable-adapters/vision/geni_rebind_gate.py (6/6 gates) + demo_acceptance.py (6/6, real HTTP path)",
+ "command": "/Users/midas/.mlx-env/bin/python3 geni_rebind_gate.py   # and: python3 demo_acceptance.py",
+ "raw_path": "ane-mutable-adapters/vision/_rebind_gate_2026-08-23.json",
+ "raw_sha256": "6f1d40cf4bcc71fe0ad6c15ad6017b7c646253829aa3ea1760fb4b72e12b2ec3",
+ "raw_status": "LOCATED",
+ "cited_in": [
+  "§3.1 prose (the per-change paragraph)"
+ ],
+ "supersedes_for_mechanism_claims": "switch.gdn_4chunk",
+ "notes": "Measured bind patterns: reuse build [0.0, 52.8, 0.0, 53.1]; re-bind-every-call build [47.2, 51.2, 51.1, 47.5]; same-day rebuild of the unmodified source [49.8, 51.9, 51.7, 47.7]. Corroborated on the live HTTP path by demo_acceptance.py (sha 2868e8d2c2817b061331cc7d83c86c8321bf4bca6f96cb77cda0502319cc2d54). ⚠️ DIFFERENT ARTICLE from switch.gdn_4chunk (chunked 4B) and corner.flip_warm (1.7B pal8) — these are not interchangeable and must not be differenced.",
+ "provenance": "Operator ruling 2026-08-24: numbers from the pre-bedrock framework are superseded by demo-provenance numbers where those exist; these become the stored ones.",
+ "replication": {
+  "status": "AGREES",
+  "n_independent_runs": 3,
+  "separation": "change-bind medians across three sessions all within 47.2-56.3; no two runs' medians differ beyond the pooled spread",
+  "note": "three acceptance sessions (2 binaries + live LAN demo) agree; emitted tokens BYTE-IDENTICAL per run (see took_check)"
+ },
+ "took_check": "capability gap + byte-identity, per run: on-arm emits the codebook letter, off-arm emits prose (same image, greedy); repeat tokens BYTE-IDENTICAL to fresh-bind tokens; base weight.bin md5 6d698c24871a55b2 constant across every swap. Shares its raw with switch.demo_repeat."
+}

@@ -19,3 +19,53 @@ __pycache__/
 swap_multi
 gen_qwen
 .DS_Store
+
+# ── Item 0 gate (2026-08-30): close the `git add -A` hazard ──────────────────
+# Before this block 74,428 files (~30 GB) under vision/ and structured/ were one
+# `git add -A` from being staged, including a 73.6 MB checkpoint whose `.keep`
+# suffix defeated the `*.pt` rule above. These directories carry ZERO tracked
+# files, so ignoring them wholesale cannot orphan anything.
+vision/
+structured/
+graphify-out/
+# suffix-evasion: any rule above defeated by a trailing tag
+*.keep
+*.bak
+*.bak_*
+# run logs and per-run scratch directories
+*.log
+qwen/_*/
+# raster / media blobs — this repo tracks source (py, sh, mm, md, html)
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.avif
+# loose tensor dumps
+*.f16
+*.f32
+*.npy
+# build outputs
+ce_qwen
+logit_dump
+
+# ── THE SUPPLEMENT IS A PUBLISHED ARTIFACT, NOT BUILD OUTPUT ─────────────────
+# The blanket rules above (*.pt, *.log, *.png) are right for this repo's working
+# dirs and WRONG for supplement_codebook/, whose whole job is to be pulled and
+# run: the paper's checkpoint is a .pt, G6's corpus is 48 .png, the green gate
+# runs are .log, fvmlib_check is a .txt. Without these negations 62 of its 96
+# files vanish silently and a reader clones something that cannot run.
+# ⛔ Scoped to this one directory on purpose. Do not widen.
+!supplement_codebook/**/*.pt
+!supplement_codebook/**/*.txt
+!supplement_codebook/**/*.log
+!supplement_codebook/**/*.png
+# ...but its scratch/run outputs still stay out:
+supplement_codebook/_gate_web.log
+supplement_codebook/gate_run.log
+supplement_codebook/gate_run_tierB.log
+supplement_codebook/_demo_acceptance.json
+supplement_codebook/data_codebook/
+supplement_codebook/_adapters/
+supplement_codebook/_mlc_shadow/
+supplement_codebook/_demo/

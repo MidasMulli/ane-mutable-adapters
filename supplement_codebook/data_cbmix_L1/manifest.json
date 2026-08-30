@@ -1,0 +1,85 @@
+{
+ "codebook": {
+  "0": "e",
+  "1": "b",
+  "2": "f",
+  "3": "c",
+  "4": "a",
+  "5": "d",
+  "6": "h",
+  "7": "g"
+ },
+ "n_sym": 8,
+ "length": 1,
+ "bands": {
+  "A": {
+   "cell": [
+    38,
+    64
+   ],
+   "wratio": [
+    0.1,
+    0.16
+   ],
+   "rot": 6.0
+  },
+  "B": {
+   "cell": [
+    38,
+    64
+   ],
+   "wratio": [
+    0.26,
+    0.34
+   ],
+   "rot": 15.0
+  }
+ },
+ "splits": {
+  "fit": {
+   "n_images": 0,
+   "n_combos": 0,
+   "band": "A"
+  },
+  "compose": {
+   "n_images": 24,
+   "n_combos": 8,
+   "band": "A"
+  },
+  "tier3": {
+   "n_images": 24,
+   "n_combos": 8,
+   "band": "B"
+  }
+ },
+ "__seed": 0,
+ "__argv": [
+  "make_data_codebook.py",
+  "--out",
+  "data_cbmix_L1",
+  "--n-sym",
+  "8",
+  "--length",
+  "1",
+  "--train-combos",
+  "0",
+  "--held-combos",
+  "8",
+  "--reps",
+  "3",
+  "--held-reps",
+  "3",
+  "--seed",
+  "0"
+ ],
+ "__utc": "2026-08-30T11:39:00.727814Z",
+ "__generator": "make_data_codebook.py",
+ "__params": {
+  "n_sym": 8,
+  "length": 1,
+  "n_train_combo": 0,
+  "n_held_combo": 8,
+  "reps": 3,
+  "held_reps": 3
+ }
+}

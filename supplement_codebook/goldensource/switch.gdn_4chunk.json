@@ -1,0 +1,55 @@
+{
+ "key": "switch.gdn_4chunk",
+ "value": null,
+ "unit": "ms",
+ "convention": "warm rebind of a resident model; the timed call REPLACES all 4 chunk MLModels (file stage AND bind, not bind alone); wall clock",
+ "kind": "MEASUREMENT",
+ "status": "SUPERSEDED",
+ "article": "chunked 4B linear-attention build (Qwen3.5-4B GatedDeltaNet, gdnmut_gc0..3.mlmodelc), 4 chunks, 1,344,320 B/chunk = 5,377,280 B per rebind",
+ "tier": "deployed",
+ "arm": "warm",
+ "n": null,
+ "n_unit": "rebind calls",
+ "spread": null,
+ "producing_script": "ane-mutable-weights/tools/rebind_size_arms.py (driver) + tools/bind_seq_timed.mm (timed binary)",
+ "command": "python3 tools/rebind_size_arms.py   # writes _rebind_size/<arm>_<UTC>/{result.json,raw.jsonl}",
+ "raw_path": null,
+ "raw_sha256": null,
+ "cited_in": [
+  "§3.5 prose (the three-regime list)",
+  "§4.3 table row 'switch cost'",
+  "§4.4 N* numerator"
+ ],
+ "⛔ STATUS_REASON": "THE 84.4 ms / n=186 FIGURE HAS NO LOCATABLE PRODUCING RAW. It is the value the paper cites in §3.5, §4.3 and as the N* numerator, and this entry could not be filled because the measurement behind it is not on disk. Found instead, by direct read of every _rebind_size/*/ raw: 84.4 with range [75.8, 98.6] and n=186 appears ONLY as an INHERITED HEADER FIELD ('anchor_mean_ms', 'anchor_ms', 'n_anchor') inside runs that were themselves n=40 and measured DIFFERENT values. The two on-disk anchor runs measured mean 77.255 (n=40) and 79.8 (n=40). So the raws that mention 84.4 are reproductions CITING it as a prior anchor, not the run that produced it.",
+ "locatable_measurements": [
+  {
+   "value": 77.255,
+   "n": 40,
+   "spread": {
+    "min": 75.5,
+    "max": 81.3
+   },
+   "sd": 1.171,
+   "raw_path": "ane-mutable-weights/_rebind_size/anchor_20260808T120644/result.json",
+   "raw_sha256": "dfb6e2dbc5f6befe09249f68a635643f7d6fc8e1ec0573c60a5e4ee450e856bb",
+   "took_check": "SELFTEST off/on differ (argmax same, |dmargin| 0.327, |dsumabs| 3577.66) — the swap is load-bearing in this run"
+  },
+  {
+   "value": 79.8,
+   "n": 40,
+   "raw_path": "ane-mutable-weights/_rebind_size/anchor_20260809T115220/result.json",
+   "raw_sha256": "0b071a36dc9d05e4392fe0a97e059f437947e3b7e575b6f4115e9b8c52a38e41"
+  }
+ ],
+ "notes": "⇒ THE PAPER'S OWN STANDARD APPLIES TO THIS FIGURE. §4.8 now states it: an unfindable arm that SUPPLIES A CITED FIGURE is PULLED; one that supplies no figure is disclosed and rescoped. 84.4 supplies three cited figures. ⇒ RECOMMENDATION (operator/CA decision, NOT taken unilaterally, and NOT actioned because the sections are FROZEN for the confirmation read): either (a) locate the n=186 stage-1 raw and fill this entry, or (b) re-anchor §3.5/§4.3/§4.4 on the locatable n=40 pair (77.3 / 79.8, both with sha-verified raws), which are LOWER than 84.4 and therefore make the bound path look BETTER, not worse — so the correction is against our own interest to leave uncorrected. Related and already in the paper: §3.5 discloses that the same sweep's own 4-chunk arm reads 70.0 ms, BELOW the 84.4 anchor's stated floor of 75.8, 'unexplained' — that discrepancy and this missing raw are plausibly the same defect. ALSO: this is a DIFFERENT ARTICLE from corner.flip_warm (~88 ms, Qwen3-1.7B pal8); the two agree in order and are not the same measurement.",
+ "provenance": "Entry written 2026-08-24 as the Phase-0 worked reference for goldensource/SPEC.md. Values transcribed by CA from §4 as it read it; producing_script/command/raw_path/raw_sha256 filled by CC from disk — and the attempt to fill them is what surfaced the missing raw.",
+ "raw_status": "INHERITED_HEADER",
+ "superseded_by": "switch.demo_change (for mechanism/switch-cost claims); switch.gdn_4chunk_n40 (for claims specifically about the chunked-4B article)",
+ "supersession_reason": "OPERATOR RULING 2026-08-24: figures from the pre-bedrock framework — the period before the demo was nailed down — are superseded by demo-provenance numbers where those exist, and the demo numbers become the stored ones. 84.4/n=186 additionally has NO LOCATABLE PRODUCING RAW (it appears on disk only as an inherited header inside n=40 runs that measured 77.255 and 79.8), so it fails the paper's own §4.8 standard independently of the ruling. ⛔ DO NOT CITE 84.4. It stays in the folder rather than being deleted so a reader meeting it in an older packet has a forwarding address — that is the machinery a markdown file could not provide.",
+ "replication": {
+  "status": "NONE",
+  "n_independent_runs": 0,
+  "separation": "n/a - no independent run of 84.4/n=186 exists on disk",
+  "note": "⛔ THE FIELD THAT WOULD HAVE CAUGHT THIS EARLIEST. The two runs that MENTION 84.4 measured 77.255 and 79.800; they cite it as a prior anchor, they do not replicate it."
+ }
+}

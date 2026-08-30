@@ -1,0 +1,2 @@
+# A3 fvmlib overflow check (recorded per CA 23-01-26 §1):
+Too many fvmlibs occurrences: 0
