@@ -67,5 +67,9 @@ def load(model):
         cw(b.v, g(p + "self_attn.v_proj.weight")); cw(b.o, g(p + "self_attn.o_proj.weight"))
         b.qn.data = g(p + "self_attn.q_norm.weight").view(1, 1, HD, 1); b.kn.data = g(p + "self_attn.k_norm.weight").view(1, 1, HD, 1)
         cw(b.gate, g(p + "mlp.gate_proj.weight")); cw(b.up, g(p + "mlp.up_proj.weight")); cw(b.down, g(p + "mlp.down_proj.weight"))
-    model.nf.w.data = g("model.norm.weight").view(1, D, 1, 1); cw(model.head, g("lm_head.weight"))
+    model.nf.w.data = g("model.norm.weight").view(1, D, 1, 1)
+    # Qwen3-0.6B-Base TIES the LM head to the embeddings, so `lm_head.weight` is absent.
+    # The instruct variant this file defaults to ships one explicitly. Fall back to the tied
+    # embedding matrix rather than requiring a separate tensor.
+    cw(model.head, g("lm_head.weight") if "lm_head.weight" in W else g("model.embed_tokens.weight"))
     return g
