@@ -14,7 +14,7 @@ top-level README before concluding an entitlement problem.
 
 - Qwen3-0.6B (GQA, RoPE, per-head q/k RMSNorm, SwiGLU, vocab 151936) ported to the ANE-friendly conv form.
   The port is faithful: logits cosine **1.000000** against Hugging Face on a reference prompt.
-- The model places fully on the Neural Engine (CoreML compute plan: all compute ops on ANE, CPU 0).
+- Core ML's compute plan reports all compute ops as planned for the Neural Engine; runtime placement not established by this count.
 - Two LoRA adapters trained on the frozen base (Shakespeare and Alice in Wonderland), deployed as a
   **two-conv low-rank parallel delta** on the q and v projections of all 28 layers
   (`proj = base(x) + B(A(x))`, base frozen in `weight.bin`, the 112 low-rank factors mutable in one

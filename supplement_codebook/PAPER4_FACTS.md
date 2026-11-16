@@ -80,6 +80,7 @@ produced it. Rows whose full raw-file record is enumerated separately are listed
 - values: per-char 0.887 · exact 0.683 · base 0.000/0.000 · deployed prompt arm 0.000/0.000 ·
 - gates: bogus-path took-check PASS (refused, "ARM DID NOT TAKE") · base md5 constant ·
 - source: deploy_v1.log + ane-mutable-adapters/vision/RESULT_syriac_ane_raw_all.json
+- correction (2026-11-16): direct raw counts are 213/240 characters and 41/60 exact strings over 60 images of 30 compose combinations. The deploy command used EVAL_HINT empty, so the logged 'deployed prompt arm' repeated BASE(off) and is not an independent prompting control. The verified split is fit_train / fit_heldout / compose; the generic 'REPORT HALF B' print is not a separately verified subdivision.
 - cited_in: §2.3 · F6 caption · §1.5 (pointer) · §1.3 carries the availability note number-free
 
 ## cb.visualkey.arms

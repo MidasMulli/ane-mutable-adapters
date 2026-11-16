@@ -1,27 +1,33 @@
 # ane-mutable-adapters
 
-Hot-swapping a LoRA adapter on the Apple Neural Engine, with the base model frozen and resident, through Apple's own on-device mutable-weight mechanism. Our own transformer, our own adapters, swapped live: the model predicts a different token, and the base is never touched.
+Hot-swapping a LoRA adapter on the Apple Neural Engine, with the base model frozen and resident, through a private mutable-weight interface of Apple's on-device runtime. Our own transformer, our own adapters, swapped live: the model predicts a different token, and the base is never touched.
 
 > **This is a research characterization, not a stock-Mac feature.** It requires **SIP off** plus `amfi_get_out_of_my_way=1`, which is a fully unlocked research machine, not a normal user's Mac. The point is to characterize how the ANE's on-device adapter mechanism and its file-trust model actually work, on macOS 27, using our own model and our own adapters. Nothing here works on a stock, secured Mac.
+>
+> This research setup binds adapter buffers through a private mutable-weight interface. It required disabled SIP/AMFI, a privately entitled harness and trusted-path staging. It is not an Apple-supported public adapter API.
 
 ## What it shows
 
 The ANE serves on-device adapters by keeping one base model compiled and resident, and swapping a small adapter over it. This repo reproduces that shape end to end on a model that is entirely ours:
 
-- A small transformer (multi-head attention, MLP, LayerNorm, an LM head to 1000-vocab logits) that places fully on the Neural Engine (CoreML compute plan: 134/134 ops on ANE, CPU 0).
+- A small transformer (multi-head attention, MLP, LayerNorm, an LM head to 1000-vocab logits) that Core ML's compute plan reports as planned for the Neural Engine (134/134 ops; runtime placement not established by this count).
 - The LM head split into a **frozen base** part and a **mutable adapter** part (`y = base_head(h) + adapter(h)`), the base staying in `weight.bin`, the adapter in its own `adapter.bin` declared mutable.
-- Two of our own adapters swapped over the resident base. Adapter A makes the model predict token 436, adapter B predicts 544, deterministically. The base `weight.bin` is byte-identical (md5 constant) across both swaps.
+- Two of our own adapters swapped over the resident base. Adapter A makes the model predict token 436, adapter B predicts 544, deterministically. In the recorded swap checks, the base weight.bin file hash stayed unchanged. This is a file-integrity observation; it does not establish that the runtime never copies or rebuilds weights in memory.
+
+> **Placement.** Core ML's compute plan reports these operations as eligible/planned for Neural Engine execution. Those counts alone do not measure runtime placement. Runtime placement must be supported by a dispatch trace for the named build, with an appropriate backend control. Host preparation and readout remain separate.
 
 In the kernel log (`results/kernel_log_swap.txt`), the base is one frozen 6.8 MB kernel section and the adapter is a separate 512 KB mutable cluster; only the adapter is re-patched per swap. That is the efficient base-resident, cheap-adapter-swap shape, on a real transformer, driven with our own weights.
 
 ## How it works
 
 1. **Author the model with an adapter path and declare it mutable.** The base must be compiled with the adapter present in the architecture and the adapter's weight blob declared mutable (CoreML's `BlobFileMutabilityInfo`). The adapter's shape is fixed at compile time; only its values swap later.
-2. **Keep the base a distinct, frozen blob.** The base weights stay in `weight.bin` and are not declared mutable, so a swap never rewrites them.
-3. **Inject only the adapter at load.** The mutable adapter is supplied through the sanctioned injection API (`e5rtMutableMILWeightURLs`). Loading with no adapter refuses at predict time; the model demands its mutable weight.
+2. **Keep the base a distinct, frozen blob.** The base weights stay in `weight.bin` and are not declared mutable, so a swap does not rewrite the weight file.
+3. **Inject only the adapter at load.** The mutable adapter is supplied through the private mutable-weight injection key (`e5rtMutableMILWeightURLs`). In this build, loading with no adapter refuses at predict time. Missing-adapter refusal is build-specific. The qwen-class behavior does not provide a general guard for the GDN hybrid. Each deployed build needs its own positive test that the intended adapter computation took effect.
 4. **The trust model.** The ANE trusts an adapter file by its **directory (a path-prefix)**, not by a content signature. Placing our own adapter under a trusted path-prefix (an AppleIntelligence AppModelAssets directory, writable only under SIP off) clears `aneVnodeTrustVerification`, so arbitrary own content is admitted. macOS 27 removed the public custom-adapter API, but this internal file path still accepts our weights.
 
 Each swap is a **bind**: a fresh program instance over the resident base plus an adapter patch. It is per-request routing, not editing weights mid-generation.
+
+> **Historical visualization.** Its “N/N ops on ANE · CPU 0” badge came from a compute plan, not a runtime placement measurement. Do not use that badge as evidence of exclusive ANE execution. (Applies to `media/mechanism.mp4` and `media/terminal.mp4`.)
 
 ## Reproduce
 
@@ -44,7 +50,7 @@ Files:
 - `chargpt/`                    the **trained** follow-up: train a char-GPT, train two adapters, swap them on the ANE
 - `qwen/`                       the **real-model** follow-up: the same on a released pretrained LLM (Qwen3-0.6B)
 - `results/`                    the S1, S4 and N1-N4 findings, plus a verbatim kernel-log excerpt
-- `media/`                      a mechanism video, a terminal-replay video, an interactive explainer
+- `media/`                      a mechanism video, a terminal-replay video, an interactive explainer (historical; see the note below)
 
 > **The entitlements are mandatory.** The swap harness must be codesigned with `harness/ane.entitlements`
 > (`build_harness.sh` does this), and they are grantable only under SIP off + `amfi_get_out_of_my_way=1`.
@@ -68,8 +74,8 @@ but not that it means anything. `chargpt/` closes that gap: we train a small cha
 base**, and swap them on the Neural Engine. The generated text changes register with the swap while the
 base stays byte-identical.
 
-CoreML's compute plan places every op of the transformer body on the ANE (216 of 216, CPU 0). Token
-embedding and sampling run on the host; the body runs on the ANE.
+Core ML's compute plan reports every op of the transformer body as planned for the ANE (216 of 216);
+runtime placement not established by this count. Token embedding and sampling run on the host.
 
 ```bash
 cd chargpt

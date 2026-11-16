@@ -21,8 +21,8 @@ train (stock) → convert → bind (ANE) → generate (ANE).
   adhoc-sign the four `com.apple.aned.private.*` + `com.apple.private.iokit-user-access` entitlements
   the bind harness carries; SIP off is needed to stage the adapter under the AppleIntelligence trusted
   path (`/private/var/db/AppleIntelligencePlatform/AppModelAssets/`), which the runtime trusts by
-  container prefix. Neither is a way to defeat the weight seal; both are the access cost of the
-  sanctioned path.
+  container prefix. Neither is a way to defeat the weight seal; both are the access cost of this
+  private research path, which is not an Apple-supported public adapter API.
 
 ## ⛔ WHAT THIS PACKAGE DOES NOT SHIP, AND WHY
 
@@ -45,6 +45,16 @@ server and the acceptance check — ships here, with the corpus and the paper's 
 (privileged)** is the bind and needs the table above. A machine without bring-up cannot pass Tier B,
 and the gate says so rather than reporting a green it did not earn.
 
+## Recorded deployed result (corrected 2026-11-16)
+
+The deployed adapter produced 213/240 correct character positions and 41/60 exact strings on 60 images of 30 combination-held-out targets. The command used “Decode the symbols.” with EVAL_HINT empty. Consequently the logged PROMPT(off+hint) condition repeated BASE(off); it is not a separate prompting method. The 30 targets are absent from both fit_train and fit_heldout. The four illustrated successful renders cover two combinations.
+
+The verified split is fit_train / fit_heldout (render holdout for checkpoint selection) / compose (combination holdout); the evaluation takes the first 60 compose rows.
+
+## Export helper scope
+
+deploy_codebook.sh packs and stages an adapter for an existing convolution-form compiled graph. It hard-codes FORM=conv. The FORM option in vendor/deploy_q35_adapter.py selects matching constant names/layout in an existing graph; it is not a graph converter. A second export form requires its own correctly compiled artifact.
+
 ## Pipeline (train → convert → bind → generate)
 
 ```
@@ -65,7 +75,7 @@ and the gate says so rather than reporting a green it did not earn.
      # --targets and --rank from the compiled article rather than requiring you to know them.
 
 3. sudo -v && ./deploy_codebook.sh          # ckpt -> conv mutable blob -> stage to the trusted path
-     # conv form is mandatory: linear-form binds but does not compose (paper §2.9)
+     # packs/stages for an existing convolution-form compiled graph (FORM=conv hard-coded; see below)
      # CK= overrides the checkpoint; its md5 is asserted (see 'The checkpoint' below)
 
 4. python3 codebook_web.py                  # serve the real user path on :8711
