@@ -75,7 +75,7 @@ deploy_codebook.sh packs and stages an adapter for an existing convolution-form 
      # --targets and --rank from the compiled article rather than requiring you to know them.
 
 3. sudo -v && ./deploy_codebook.sh          # ckpt -> conv mutable blob -> stage to the trusted path
-     # packs/stages for an existing convolution-form compiled graph (FORM=conv hard-coded; see below)
+     # packs/stages for an existing convolution-form compiled graph (FORM=conv hard-coded; see Export helper scope above)
      # CK= overrides the checkpoint; its md5 is asserted (see 'The checkpoint' below)
 
 4. python3 codebook_web.py                  # serve the real user path on :8711

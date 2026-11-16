@@ -1,6 +1,6 @@
 # ane-mutable-adapters
 
-Hot-swapping a LoRA adapter on the Apple Neural Engine, with the base model frozen and resident, through a private mutable-weight interface of Apple's on-device runtime. Our own transformer, our own adapters, swapped live: the model predicts a different token, and the base is never touched.
+Hot-swapping a LoRA adapter on the Apple Neural Engine, with the base model frozen and resident, through a private mutable-weight interface of Apple's on-device runtime. Our own transformer, our own adapters, swapped live: the model predicts a different token, while the recorded base weight.bin file hash stays unchanged.
 
 > **This is a research characterization, not a stock-Mac feature.** It requires **SIP off** plus `amfi_get_out_of_my_way=1`, which is a fully unlocked research machine, not a normal user's Mac. The point is to characterize how the ANE's on-device adapter mechanism and its file-trust model actually work, on macOS 27, using our own model and our own adapters. Nothing here works on a stock, secured Mac.
 >
@@ -50,7 +50,7 @@ Files:
 - `chargpt/`                    the **trained** follow-up: train a char-GPT, train two adapters, swap them on the ANE
 - `qwen/`                       the **real-model** follow-up: the same on a released pretrained LLM (Qwen3-0.6B)
 - `results/`                    the S1, S4 and N1-N4 findings, plus a verbatim kernel-log excerpt
-- `media/`                      a mechanism video, a terminal-replay video, an interactive explainer (historical; see the note below)
+- `media/`                      a mechanism video, a terminal-replay video, an interactive explainer (historical; see the note above)
 
 > **The entitlements are mandatory.** The swap harness must be codesigned with `harness/ane.entitlements`
 > (`build_harness.sh` does this), and they are grantable only under SIP off + `amfi_get_out_of_my_way=1`.
